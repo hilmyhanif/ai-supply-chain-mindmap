@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global AI Supply Chain Mindmap</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --grid: rgba(255,255,255,0.03);
+    --upstream: #ff6b35;
+    --midstream-chip: #00d4ff;
+    --midstream-infra: #7c3aed;
+    --downstream: #10b981;
+    --indonesia: #f59e0b;
+    --center: #ffffff;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --line: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    cursor: grab;
+  }
+
+  body:active { cursor: grabbing; }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Atmospheric glow blobs */
+  .blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .blob-1 { width: 600px; height: 600px; background: var(--upstream); top: -200px; left: -200px; }
+  .blob-2 { width: 500px; height: 500px; background: var(--midstream-chip); bottom: -150px; right: -150px; }
+  .blob-3 { width: 400px; height: 400px; background: var(--downstream); top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  /* Header bar */
+  .header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 16px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: #fff;
+  }
+
+  .header-subtitle {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .legend {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  /* Controls */
+  .controls {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ctrl-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--line);
+    background: rgba(10,10,15,0.9);
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(10px);
+  }
+  .ctrl-btn:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.05); }
+
+  /* Hint */
+  .hint {
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    z-index: 100;
+    letter-spacing: 1px;
+  }
+
+  /* SVG canvas */
+  #canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Node styles */
+  .node-center {
+    cursor: pointer;
+  }
+
+  .node-branch {
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .node-leaf {
+    cursor: pointer;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    z-index: 200;
+    background: rgba(10,10,15,0.97);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 16px 20px;
+    max-width: 280px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    backdrop-filter: blur(20px);
+  }
+
+  .tooltip.visible { opacity: 1; }
+
+  .tooltip-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+
+  .tooltip-body {
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(226,232,240,0.75);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .tooltip-badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 10px;
+    font-family: 'Space Mono', monospace;
+    letter-spacing: 1px;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<div class="header">
+  <div>
+    <div class="header-title">GLOBAL AI SUPPLY CHAIN</div>
+    <div class="header-subtitle">Upstream → Midstream → Downstream · Indonesia Opportunities</div>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-dot" style="background:var(--upstream)"></div>UPSTREAM</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--midstream-chip)"></div>CHIPS & HW</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--midstream-infra)"></div>INFRASTRUCTURE</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--downstream)"></div>DOWNSTREAM</div>
+    <div class="legend-item"><div class="legend-dot" style="background:var(--indonesia)"></div>INDONESIA OPP.</div>
+  </div>
+</div>
+
+<svg id="canvas"></svg>
+
+<div class="controls">
+  <button class="ctrl-btn" id="zoomIn">+</button>
+  <button class="ctrl-btn" id="zoomOut">−</button>
+  <button class="ctrl-btn" id="resetView" title="Reset">⌖</button>
+</div>
+
+<div class="hint">DRAG TO PAN · SCROLL TO ZOOM · HOVER NODES</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-title" id="tt-title"></div>
+  <div class="tooltip-body" id="tt-body"></div>
+  <div class="tooltip-badge" id="tt-badge"></div>
+</div>
+
+<script>
+const DATA = {
+  center: {
+    label: 'GLOBAL AI\nSUPPLY CHAIN',
+    info: 'The global AI supply chain spans from raw critical minerals to consumer-facing AI applications. Total market value exceeds $700B in 2024, growing at 25–40% annually.',
+    badge: '$700B+ TOTAL MARKET 2024',
+    badgeColor: '#ffffff'
+  },
+  branches: [
+    // ── UPSTREAM ──────────────────────────────────────────
+    {
+      id: 'critical-minerals',
+      label: 'CRITICAL\nMINERALS',
+      color: '#ff6b35',
+      angle: 200,
+      dist: 220,
+      layer: 'upstream',
+      info: 'Raw minerals form the foundation of every chip, server, and data center. China controls refining of most critical minerals despite not always leading in mining.',
+      badge: 'UPSTREAM',
+      leaves: [
+        { label: 'NICKEL', angle: 220, dist: 420, info: 'Indonesia holds 42% of world reserves, 60% of global mine output. Used in stainless steel, batteries, data center construction.\n\nKey players: MIND ID, Vale Indonesia, Harita, Tsingshan', badge: '$33–35B MARKET', badgeColor: '#ff6b35' },
+        { label: 'TIN', angle: 195, dist: 400, info: '2nd most critical soldering metal for chip assembly. Indonesia is world\'s 2nd largest producer (~50K tonnes/yr).\n\nKey players: PT Timah, Minsur, MSC', badge: '$8–10B MARKET', badgeColor: '#ff6b35' },
+        { label: 'COPPER', angle: 170, dist: 410, info: 'Essential for chip interconnects, PCB substrates, data center wiring. Grasberg (Indonesia) is world\'s 2nd largest mine at 816K tonnes.\n\nKey players: Freeport-McMoRan, BHP, Glencore', badge: '$250–280B MARKET', badgeColor: '#ff6b35' },
+        { label: 'SILICON / SILICA', angle: 245, dist: 430, info: 'Base material for all semiconductor wafers. Top 5 wafer firms hold 82% revenue. Japan dominates (Shin-Etsu, SUMCO).\n\nKey players: Shin-Etsu, SUMCO, Siltronic, SK Siltron', badge: '$14–16B MARKET', badgeColor: '#ff6b35' },
+        { label: 'RARE EARTH\nELEMENTS', angle: 265, dist: 420, info: 'China controls 91% of global refining, 69% of mining. Used in hard drives, cooling systems, motors. China export ban on gallium/germanium Dec 2024.\n\nChokepoint risk: EXTREME', badge: '$5.4B MARKET', badgeColor: '#ff6b35' },
+        { label: 'COBALT', angle: 152, dist: 400, info: 'Critical for NMC battery chemistry in data center UPS systems. DRC holds 70% of reserves.\n\nKey players: Glencore, China Moly, ERG', badge: 'DRC 70% RESERVES', badgeColor: '#ff6b35' },
+      ]
+    },
+    {
+      id: 'raw-processing',
+      label: 'MINERAL\nPROCESSING',
+      color: '#ff8c42',
+      angle: 235,
+      dist: 210,
+      layer: 'upstream',
+      info: 'Refining & processing layer converts mined ores into industrial-grade inputs. China dominates this layer, creating the AI supply chain\'s biggest single chokepoint.',
+      badge: 'CHOKEPOINT LAYER',
+      leaves: [
+        { label: 'CHINESE\nSMELTERS', angle: 260, dist: 390, info: 'China refines 44% of copper, 91% of rare earths, 94% of polysilicon, 98% of gallium globally — even for minerals mined elsewhere.\n\nKey players: Tsingshan, CMOC, Huayou Cobalt', badge: 'DOMINANT POSITION', badgeColor: '#ff8c42' },
+        { label: 'INDONESIAN\nHILIRISASI', angle: 235, dist: 380, info: 'Indonesia\'s mineral downstreaming policy. Nickel ore export ban (2020) grew smelters from 2 to 60+. Nickel derivative exports surged from $1.1B (2017) to $38–40B (2024).\n\nPolicy risk: WTO challenge ongoing', badge: '$38–40B EXPORTS 2024', badgeColor: '#f59e0b' },
+        { label: 'BATTERY\nPRECURSORS', angle: 210, dist: 370, info: 'MHP (Mixed Hydroxide Precipitate) → pCAM → NMC cathode for batteries. Indonesia produces MHP but most refining still done in China.\n\nKey players: LG, CATL, Posco HY Clean Energy', badge: 'VALUE-ADD GAP', badgeColor: '#ff8c42' },
+      ]
+    },
+
+    // ── CHIP DESIGN & FABRICATION ──────────────────────────
+    {
+      id: 'chip-design',
+      label: 'CHIP\nDESIGN',
+      color: '#00d4ff',
+      angle: 315,
+      dist: 225,
+      layer: 'chips',
+      info: 'Fabless design companies create chip architectures without manufacturing. NVIDIA\'s dominance in AI accelerators is near-absolute at 80–90% market share.',
+      badge: 'CHIPS & HARDWARE',
+      leaves: [
+        { label: 'NVIDIA', angle: 295, dist: 420, info: 'Dominant AI chip designer. FY2025 revenue: $130.5B. Data center segment: $115.2B. CUDA ecosystem has 3.5M+ developers creating massive switching costs.\n\nProducts: H100, H200, B200, GB200', badge: '$130.5B REVENUE FY25', badgeColor: '#00d4ff' },
+        { label: 'AMD', angle: 310, dist: 410, info: 'Second largest AI chip designer. MI300X gaining traction. ~$5B AI chip revenue in 2024. Gaining share as alternatives to NVIDIA emerge.\n\nProducts: MI300X, MI325X, MI355X', badge: '~$5B AI REVENUE 2024', badgeColor: '#00d4ff' },
+        { label: 'CUSTOM SILICON\n(Hyperscalers)', angle: 330, dist: 430, info: 'Google TPU, Amazon Trainium/Inferentia, Microsoft Maia, Meta MTIA. Designed to reduce NVIDIA dependency for inference workloads.\n\nBroadcom AI revenue: $8B (+77% YoY)', badge: 'GROWING FAST', badgeColor: '#00d4ff' },
+        { label: 'QUALCOMM\nINTEL ARM', angle: 350, dist: 400, info: 'Edge AI chips for smartphones, PCs, and edge inference. Qualcomm NPUs in Snapdragon, Apple Neural Engine, Intel Gaudi.\n\nFocus: Inference at the edge, not training', badge: 'EDGE AI SEGMENT', badgeColor: '#00d4ff' },
+      ]
+    },
+    {
+      id: 'fabrication',
+      label: 'CHIP\nFABRICATION',
+      color: '#38bdf8',
+      angle: 345,
+      dist: 215,
+      layer: 'chips',
+      info: 'Semiconductor foundries physically manufacture chips using photolithography. TSMC\'s dominance in advanced nodes creates a single point of failure for global AI hardware.',
+      badge: 'CRITICAL NODE',
+      leaves: [
+        { label: 'TSMC', angle: 330, dist: 410, info: 'World\'s most critical AI infrastructure company. 70.2% foundry market share (Q2 2025). Manufactures >90% of advanced AI chips. CoWoS advanced packaging remains primary bottleneck.\n\nRevenue: $90B+ 2024', badge: '70% MARKET SHARE', badgeColor: '#38bdf8' },
+        { label: 'SAMSUNG\nFOUNDRY', angle: 355, dist: 390, info: 'Second largest foundry at 7.3% share. Struggles with yield rates at 3nm/2nm nodes. Competes for NVIDIA and Qualcomm orders.\n\nAdvantage: Memory integration (HBM)', badge: '7.3% MARKET SHARE', badgeColor: '#38bdf8' },
+        { label: 'INTEL FOUNDRY', angle: 375, dist: 400, info: 'US government\'s strategic bet via CHIPS Act ($52.7B). Posted $13.4B operating loss in 2024. Rebuilding advanced manufacturing capability.\n\nTimeline: 18A process node by 2025', badge: '$13.4B LOSS 2024', badgeColor: '#38bdf8' },
+        { label: 'ASML\n(Equipment)', angle: 10, dist: 390, info: 'Sole manufacturer of EUV lithography machines required for advanced chips. Revenue €32.7B (2025), backlog €38.8B. Export controls prevent sale to China.\n\nMonopoly position: Absolute', badge: 'EUV MONOPOLY', badgeColor: '#38bdf8' },
+      ]
+    },
+    {
+      id: 'packaging',
+      label: 'ADVANCED\nPACKAGING',
+      color: '#67e8f9',
+      angle: 20,
+      dist: 205,
+      layer: 'chips',
+      info: 'Advanced packaging integrates multiple chips into single modules. CoWoS (TSMC) and HBM stacking are critical for AI chip performance. Semiconductor packaging market growing fast.',
+      badge: 'KEY BOTTLENECK',
+      leaves: [
+        { label: 'CoWoS / HBM', angle: 10, dist: 380, info: 'Chip-on-Wafer-on-Substrate (TSMC) integrates GPU dies with HBM memory. Each H100 uses 6 HBM stacks. Demand outstrips supply significantly.\n\nBottom: SK Hynix (52% HBM share), Samsung, Micron', badge: 'CAPACITY SCARCE', badgeColor: '#67e8f9' },
+        { label: 'OSAT\n(Assembly)', angle: 30, dist: 370, info: 'Outsourced Semiconductor Assembly & Test. ASE Group, Amkor, SPIL handle packaging for fabless companies.\n\nKey players: ASE (Taiwan), Amkor (US/Korea), JCET (China)', badge: 'OSAT MARKET', badgeColor: '#67e8f9' },
+        { label: 'AI SERVER\nOEMs', angle: 48, dist: 390, info: 'Build complete AI servers from chips + packaging. AI server market: $128B (2024), projected $1.56T by 2034.\n\nKey players: Supermicro, Dell, HPE, Lenovo, Foxconn', badge: '$128B MARKET 2024', badgeColor: '#67e8f9' },
+      ]
+    },
+
+    // ── INFRASTRUCTURE ────────────────────────────────────
+    {
+      id: 'hyperscalers',
+      label: 'HYPERSCALER\nCLOUD',
+      color: '#7c3aed',
+      angle: 75,
+      dist: 230,
+      layer: 'infra',
+      info: 'Major cloud providers are the primary buyers of AI chips and operators of AI training infrastructure. Combined 2024 capex: $251–256B, rising to $350–443B in 2025.',
+      badge: 'INFRASTRUCTURE',
+      leaves: [
+        { label: 'AWS', angle: 55, dist: 420, info: 'Amazon Web Services. Leading cloud provider. AI services: Bedrock (multi-model), Trainium2 for training, Inferentia for inference.\n\nIndonesia commitment: $5B. 2025 capex: ~$105B', badge: '$105B CAPEX 2025', badgeColor: '#7c3aed' },
+        { label: 'MICROSOFT\nAZURE', angle: 72, dist: 430, info: 'Azure + OpenAI partnership. $1.7B committed to Indonesia. 840,000 AI training seats committed.\n\nProducts: Azure OpenAI Service, Copilot suite. 2025 capex: ~$80B', badge: '$1.7B INDONESIA', badgeColor: '#f59e0b' },
+        { label: 'GOOGLE\nCLOUD', angle: 88, dist: 415, info: 'Google Cloud + DeepMind integration. TPU v5 for training. Vertex AI platform. Up to 1 million TPUs committed to Anthropic.\n\nIndonesia: Jakarta region operational since 2020', badge: 'JAKARTA REGION LIVE', badgeColor: '#7c3aed' },
+        { label: 'META\nAI INFRA', angle: 104, dist: 400, info: 'Building proprietary AI infrastructure. MTIA inference chip. Owns Bifrost and Echo subsea cables landing in Indonesia.\n\n2025 capex: $64–72B, vs $38B in 2024', badge: '$64–72B CAPEX 2025', badgeColor: '#7c3aed' },
+        { label: 'ORACLE\n/ NVIDIA', angle: 42, dist: 400, info: 'Oracle Cloud Infrastructure (OCI) + Stargate JV. NVIDIA NVL72 racks at $3–4M each. DGX Cloud deployments globally.\n\nStargate: $500B 4-year commitment', badge: '$500B STARGATE', badgeColor: '#7c3aed' },
+      ]
+    },
+    {
+      id: 'data-centers',
+      label: 'DATA\nCENTERS',
+      color: '#a78bfa',
+      angle: 110,
+      dist: 215,
+      layer: 'infra',
+      info: 'Physical facilities housing AI compute. Global data center power consumption surging. 10+ GW of new capacity broke ground in 2025. Indonesia market projected to grow from $3B to $9.4B by 2030.',
+      badge: 'PHYSICAL LAYER',
+      leaves: [
+        { label: 'COLOCATION\nOPERATORS', angle: 95, dist: 400, info: 'Third-party data center real estate. Equinix, Digital Realty, Iron Mountain (US). DCI Indonesia, NeutraDC, STT GDC (Indonesia).\n\nDCI Indonesia: 119 MW live, 1,000+ MW planned at Karawang', badge: 'INDONESIA: $3B MKT', badgeColor: '#f59e0b' },
+        { label: 'POWER\nINFRASTRUCTURE', angle: 112, dist: 420, info: 'AI data centers consume 80–120 kW per rack, requiring liquid cooling. Power is the primary growth constraint globally and in Indonesia.\n\nIndonesia gap: 16% renewables vs. 23% target. 30-month interconnect queue.', badge: 'CRITICAL BOTTLENECK', badgeColor: '#a78bfa' },
+        { label: 'SUBMARINE\nCABLES', angle: 128, dist: 410, info: 'Physical internet backbone. Indonesia connected to 57 cables. Bifrost (260 Tbps, Meta/Telin), Echo (260 Tbps), Apricot (290 Tbps) all land in Indonesia.\n\nEcho & Apricot rerouted via Indonesia to avoid South China Sea', badge: '480 TBPS NEAR JAKARTA', badgeColor: '#f59e0b' },
+        { label: 'BATAM-SINGAPORE\nCORRIDOR', angle: 144, dist: 430, info: 'Nongsa Digital Park, 20km from Singapore. 300+ MW planned. $0.06–0.07/kWh power vs. Singapore\'s $0.12–0.13/kWh.\n\nPlayers: BW Digital, Princeton DG, NeutraDC, DayOne DC', badge: 'INDONESIA\'S BEST BET', badgeColor: '#f59e0b' },
+      ]
+    },
+
+    // ── DOWNSTREAM ────────────────────────────────────────
+    {
+      id: 'foundation-models',
+      label: 'FOUNDATION\nMODELS',
+      color: '#10b981',
+      angle: 160,
+      dist: 230,
+      layer: 'downstream',
+      info: 'Large AI models that power applications across industries. Captured 50% of all global VC in 2025 ($202.3B total). Still largely unprofitable despite massive revenue growth.',
+      badge: 'DOWNSTREAM',
+      leaves: [
+        { label: 'OPENAI\nANTHROPIC', angle: 140, dist: 420, info: 'OpenAI: $500B valuation, ~$13B ARR. Anthropic: $380B valuation, ~$14B ARR.\n\nBoth deeply NVIDIA-dependent. GPT-4o, Claude 3.5 Sonnet lead enterprise adoption. Neither profitable yet.', badge: '$880B COMBINED VALUE', badgeColor: '#10b981' },
+        { label: 'GOOGLE\nDEEPMIND', angle: 158, dist: 410, info: 'Gemini Ultra, Gemini Pro family. Deeply integrated into Google products. AlphaFold, AlphaCode for scientific AI.\n\nAdvantage: Owns compute (TPU), data (Search), distribution (Gmail/Workspace)', badge: 'VERTICALLY INTEGRATED', badgeColor: '#10b981' },
+        { label: 'META AI\nMISTRAL', angle: 175, dist: 400, info: 'Meta\'s Llama 3.1 (405B params) is the dominant open-source model. Mistral leading European open-source push. xAI Grok growing on X/Twitter.\n\nOpen source disrupting closed model pricing', badge: 'OPEN-SOURCE PUSH', badgeColor: '#10b981' },
+        { label: 'INDONESIA:\nSAHABAT-AI', angle: 158, dist: 440, info: 'GoTo + Indosat\'s open-source Indonesian LLM. Grew to 70B parameters by mid-2025. Supports 5 local languages. 35,000+ downloads on Hugging Face.\n\nBahasa Indonesia NLP is a genuine competitive moat', badge: 'LOCAL LLM LEADER', badgeColor: '#f59e0b' },
+      ]
+    },
+    {
+      id: 'ai-platforms',
+      label: 'AI\nPLATFORMS',
+      color: '#34d399',
+      angle: 130,
+      dist: 220,
+      layer: 'downstream',
+      info: 'Middleware platforms enabling developers to build on foundation models. NVIDIA CUDA\'s 3.5M+ developer ecosystem creates massive lock-in. Enterprise AI spending tripled in 2025.',
+      badge: 'PLATFORM LAYER',
+      leaves: [
+        { label: 'NVIDIA CUDA\nECOSYSTEM', angle: 118, dist: 390, info: 'CUDA is the de facto AI programming framework with 3.5M+ developers. Switching to AMD ROCm or Intel oneAPI extremely difficult.\n\nThis ecosystem lock-in is NVIDIA\'s deepest competitive moat', badge: '3.5M+ DEVELOPERS', badgeColor: '#34d399' },
+        { label: 'HUGGING FACE\nMLOps', angle: 132, dist: 380, info: 'Open-source model hub and MLOps platform. 1M+ models, 500K+ datasets. LangChain, Weights & Biases, Weights for ML workflow.\n\nDemocratizing AI development globally', badge: '1M+ MODELS', badgeColor: '#34d399' },
+        { label: 'ENTERPRISE AI\nSaaS', angle: 148, dist: 370, info: 'Vertical AI applications for specific industries. Enterprise gen AI revenue: $37B (2025), up 3.2x from $11.5B (2024).\n\nKey players: Salesforce Einstein, ServiceNow, SAP AI', badge: '$37B ENTERPRISE 2025', badgeColor: '#34d399' },
+      ]
+    },
+
+    // ── INDONESIA OPPORTUNITY ─────────────────────────────
+    {
+      id: 'indonesia-opp',
+      label: 'INDONESIA\nOPPORTUNITY',
+      color: '#f59e0b',
+      angle: 280,
+      dist: 240,
+      layer: 'indonesia',
+      info: 'Indonesia can capture $30–50B in annual AI supply chain value by 2035. Three strategic entry points: critical minerals, data center infrastructure, and AI talent.',
+      badge: '🇮🇩 STRATEGIC FOCUS',
+      leaves: [
+        { label: 'NICKEL\nPOWER', angle: 260, dist: 430, info: '60% of global nickel mine output. $38–40B in annual exports. PT Freeport Manyar smelter ($3B): world\'s largest single-line copper facility. Geopolitical leverage as US-China compete for minerals.\n\nGap: Chinese firms own 68%+ of smelter capacity', badge: '$38–40B EXPORTS NOW', badgeColor: '#f59e0b' },
+        { label: 'DATA CENTER\nGROWTH', angle: 280, dist: 440, info: 'Market: $3B (2024) → $9.4B (2030). 1.44 GW live → 3.56 GW projected. $23B in US tech commitments.\n\nBatam SEZ is key: 20km from Singapore, 40–70% cheaper power, submarine cable advantage', badge: '$3B → $9.4B BY 2030', badgeColor: '#f59e0b' },
+        { label: 'AI TALENT\n& STARTUPS', angle: 298, dist: 420, info: '280M population, 92% AI adoption rate. Sahabat-AI (GoTo), Kata.ai (NLP), Nodeflux (vision), Prosa.ai (voice).\n\nGap: Only 80K AI professionals. 0.28% GDP R&D spending. 80–90% salary discount vs. global markets', badge: '92% AI ADOPTION RATE', badgeColor: '#f59e0b' },
+        { label: 'GEOTHERMAL\nPOWER', angle: 314, dist: 410, info: '40% of world\'s geothermal resources (23–28 GW potential), only 11% developed. Green data center power for hyperscalers needing renewable energy.\n\nUnlocking this resolves the biggest data center constraint', badge: '40% GLOBAL POTENTIAL', badgeColor: '#f59e0b' },
+      ]
+    },
+  ]
+};
+
+// ── SVG MINDMAP ENGINE ──────────────────────────────────────────────────
+const svg = document.getElementById('canvas');
+const NS = 'http://www.w3.org/2000/svg';
+
+let viewX = 0, viewY = 0, scale = 1;
+let dragging = false, lastX, lastY;
+let g; // main group
+
+function toRad(deg) { return deg * Math.PI / 180; }
+
+function createEl(tag, attrs) {
+  const el = document.createElementNS(NS, tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function wrapText(text, maxChars = 14) {
+  return text.split('\n');
+}
+
+function drawCurve(x1, y1, x2, y2, color, opacity = 0.35, strokeWidth = 1.5) {
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2;
+  const path = createEl('path', {
+    d: `M ${x1} ${y1} Q ${mx * 0.4 + x2 * 0.6} ${my * 0.4 + y2 * 0.6} ${x2} ${y2}`,
+    fill: 'none',
+    stroke: color,
+    'stroke-width': strokeWidth,
+    'stroke-opacity': opacity,
+    'stroke-linecap': 'round',
+  });
+  return path;
+}
+
+function buildMindmap() {
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  const cx = W / 2;
+  const cy = H / 2;
+
+  // Clear SVG
+  svg.innerHTML = '';
+
+  // Defs for glows
+  const defs = createEl('defs', {});
+
+  const layerColors = { upstream: '#ff6b35', chips: '#00d4ff', infra: '#7c3aed', downstream: '#10b981', indonesia: '#f59e0b' };
+
+  // Glow filters
+  ['upstream','chips','infra','downstream','indonesia'].forEach(id => {
+    const filter = createEl('filter', { id: `glow-${id}`, x: '-50%', y: '-50%', width: '200%', height: '200%' });
+    const fe = createEl('feGaussianBlur', { in: 'SourceGraphic', stdDeviation: '8', result: 'blur' });
+    const fec = createEl('feColorMatrix', { in: 'blur', type: 'matrix', values: '1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7' });
+    filter.appendChild(fe); filter.appendChild(fec);
+    defs.appendChild(filter);
+  });
+
+  svg.appendChild(defs);
+
+  // Main transform group
+  g = createEl('g', { transform: `translate(${viewX}, ${viewY}) scale(${scale})` });
+  svg.appendChild(g);
+
+  // Lines group (behind nodes)
+  const linesG = createEl('g', {});
+  const nodesG = createEl('g', {});
+  g.appendChild(linesG);
+  g.appendChild(nodesG);
+
+  // ── CENTER NODE ───────────────────────────────────────────
+  const centerGrp = createEl('g', { class: 'node-center', style: 'cursor:pointer' });
+
+  // Outer ring pulse
+  const pulseRing = createEl('circle', { cx: cx, cy: cy, r: 72, fill: 'none', stroke: 'rgba(255,255,255,0.06)', 'stroke-width': '1' });
+  const pulseRing2 = createEl('circle', { cx: cx, cy: cy, r: 88, fill: 'none', stroke: 'rgba(255,255,255,0.03)', 'stroke-width': '1' });
+
+  // Center bg
+  const centerBg = createEl('circle', { cx, cy, r: 62, fill: '#0a0a0f', stroke: 'rgba(255,255,255,0.15)', 'stroke-width': '1.5' });
+  const centerGlow = createEl('circle', { cx, cy, r: 62, fill: 'none', stroke: 'rgba(255,255,255,0.05)', 'stroke-width': '20' });
+
+  // Cross lines inside center
+  const crossH = createEl('line', { x1: cx-50, y1: cy, x2: cx+50, y2: cy, stroke: 'rgba(255,255,255,0.06)', 'stroke-width': '1' });
+  const crossV = createEl('line', { x1: cx, y1: cy-50, x2: cx, y2: cy+50, stroke: 'rgba(255,255,255,0.06)', 'stroke-width': '1' });
+
+  centerGrp.appendChild(pulseRing2);
+  centerGrp.appendChild(pulseRing);
+  centerGrp.appendChild(centerBg);
+  centerGrp.appendChild(centerGlow);
+  centerGrp.appendChild(crossH);
+  centerGrp.appendChild(crossV);
+
+  // Center text
+  const lines = DATA.center.label.split('\n');
+  lines.forEach((line, i) => {
+    const t = createEl('text', {
+      x: cx, y: cy - 8 + i * 20,
+      'text-anchor': 'middle',
+      fill: '#ffffff',
+      'font-family': 'Bebas Neue, sans-serif',
+      'font-size': i === 0 ? '20' : '14',
+      'letter-spacing': '3',
+    });
+    t.textContent = line;
+    centerGrp.appendChild(t);
+  });
+
+  setupTooltip(centerGrp, DATA.center.label.replace('\n', ' '), DATA.center.info, DATA.center.badge, '#ffffff');
+  nodesG.appendChild(centerGrp);
+
+  // ── BRANCHES ────────────────────────────────────────────
+  DATA.branches.forEach(branch => {
+    const bRad = toRad(branch.angle);
+    const bx = cx + Math.cos(bRad) * branch.dist;
+    const by = cy + Math.sin(bRad) * branch.dist;
+
+    // Line from center to branch
+    const branchLine = drawCurve(cx, cy, bx, by, branch.color, 0.5, 2);
+    linesG.appendChild(branchLine);
+
+    // Branch node
+    const bGrp = createEl('g', { class: 'node-branch' });
+
+    const bBg = createEl('ellipse', {
+      cx: bx, cy: by,
+      rx: 52, ry: 30,
+      fill: `${branch.color}15`,
+      stroke: branch.color,
+      'stroke-width': '1.5',
+      'stroke-opacity': '0.7',
+    });
+    bGrp.appendChild(bBg);
+
+    const bLines = branch.label.split('\n');
+    bLines.forEach((line, i) => {
+      const t = createEl('text', {
+        x: bx, y: by - 5 + i * 15,
+        'text-anchor': 'middle',
+        fill: branch.color,
+        'font-family': 'Bebas Neue, sans-serif',
+        'font-size': '12',
+        'letter-spacing': '2',
+      });
+      t.textContent = line;
+      bGrp.appendChild(t);
+    });
+
+    setupTooltip(bGrp, branch.label.replace('\n', ' '), branch.info, branch.badge, branch.color);
+
+    // Hover effect
+    bGrp.addEventListener('mouseenter', () => {
+      bBg.setAttribute('fill', `${branch.color}30`);
+      bBg.setAttribute('stroke-opacity', '1');
+    });
+    bGrp.addEventListener('mouseleave', () => {
+      bBg.setAttribute('fill', `${branch.color}15`);
+      bBg.setAttribute('stroke-opacity', '0.7');
+    });
+
+    nodesG.appendChild(bGrp);
+
+    // ── LEAVES ──────────────────────────────────────────────
+    if (branch.leaves) {
+      branch.leaves.forEach(leaf => {
+        const lRad = toRad(leaf.angle);
+        const lx = cx + Math.cos(lRad) * leaf.dist;
+        const ly = cy + Math.sin(lRad) * leaf.dist;
+
+        // Line from branch to leaf
+        const leafLine = drawCurve(bx, by, lx, ly, branch.color, 0.25, 1.2);
+        linesG.appendChild(leafLine);
+
+        // Leaf node
+        const lGrp = createEl('g', { class: 'node-leaf' });
+
+        const lBg = createEl('rect', {
+          x: lx - 52, y: ly - 20,
+          width: 104, height: 40,
+          rx: 8,
+          fill: `${branch.color}10`,
+          stroke: branch.color,
+          'stroke-width': '1',
+          'stroke-opacity': '0.45',
+        });
+        lGrp.appendChild(lBg);
+
+        const lLines = leaf.label.split('\n');
+        const lineH = lLines.length > 1 ? -7 : 0;
+        lLines.forEach((line, i) => {
+          const t = createEl('text', {
+            x: lx, y: ly + lineH + i * 14,
+            'text-anchor': 'middle',
+            fill: branch.color,
+            'font-family': 'DM Sans, sans-serif',
+            'font-size': '10',
+            'font-weight': '500',
+            'letter-spacing': '0.5',
+            'fill-opacity': '0.85',
+          });
+          t.textContent = line;
+          lGrp.appendChild(t);
+        });
+
+        // Dot connector
+        const dot = createEl('circle', {
+          cx: lx, cy: ly,
+          r: 3,
+          fill: branch.color,
+          'fill-opacity': '0.6',
+        });
+        lGrp.appendChild(dot);
+
+        setupTooltip(lGrp, leaf.label.replace('\n', ' '), leaf.info, leaf.badge, leaf.badgeColor || branch.color);
+
+        lGrp.addEventListener('mouseenter', () => {
+          lBg.setAttribute('fill', `${branch.color}25`);
+          lBg.setAttribute('stroke-opacity', '0.8');
+          dot.setAttribute('r', '5');
+        });
+        lGrp.addEventListener('mouseleave', () => {
+          lBg.setAttribute('fill', `${branch.color}10`);
+          lBg.setAttribute('stroke-opacity', '0.45');
+          dot.setAttribute('r', '3');
+        });
+
+        nodesG.appendChild(lGrp);
+      });
+    }
+  });
+}
+
+// ── TOOLTIP ────────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+const ttTitle = document.getElementById('tt-title');
+const ttBody = document.getElementById('tt-body');
+const ttBadge = document.getElementById('tt-badge');
+
+function setupTooltip(el, title, body, badge, color) {
+  el.addEventListener('mouseenter', (e) => {
+    ttTitle.textContent = title;
+    ttTitle.style.color = color;
+    ttBody.textContent = body;
+    ttBadge.textContent = badge;
+    ttBadge.style.background = `${color}20`;
+    ttBadge.style.color = color;
+    ttBadge.style.borderColor = `${color}40`;
+    tooltip.classList.add('visible');
+    moveTooltip(e);
+  });
+  el.addEventListener('mousemove', moveTooltip);
+  el.addEventListener('mouseleave', () => {
+    tooltip.classList.remove('visible');
+  });
+}
+
+function moveTooltip(e) {
+  let x = e.clientX + 18;
+  let y = e.clientY - 20;
+  if (x + 300 > window.innerWidth) x = e.clientX - 308;
+  if (y + 200 > window.innerHeight) y = e.clientY - 160;
+  tooltip.style.left = x + 'px';
+  tooltip.style.top = y + 'px';
+}
+
+// ── PAN & ZOOM ─────────────────────────────────────────────────────────
+document.addEventListener('mousedown', (e) => {
+  if (e.target.closest('.node-branch, .node-center, .node-leaf, .controls, .header, .tooltip, .ctrl-btn')) return;
+  dragging = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!dragging) return;
+  viewX += e.clientX - lastX;
+  viewY += e.clientY - lastY;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+});
+
+document.addEventListener('mouseup', () => { dragging = false; });
+
+document.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.91;
+  const rect = svg.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  viewX = mx - (mx - viewX) * factor;
+  viewY = my - (my - viewY) * factor;
+  scale *= factor;
+  scale = Math.max(0.3, Math.min(3, scale));
+  g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+}, { passive: false });
+
+document.getElementById('zoomIn').onclick = () => {
+  scale = Math.min(3, scale * 1.2);
+  g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+};
+document.getElementById('zoomOut').onclick = () => {
+  scale = Math.max(0.3, scale / 1.2);
+  g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+};
+document.getElementById('resetView').onclick = () => {
+  viewX = 0; viewY = 0; scale = 1;
+  g.setAttribute('transform', `translate(0, 0) scale(1)`);
+};
+
+// Touch support
+let lastTouchDist = null;
+document.addEventListener('touchstart', (e) => {
+  if (e.touches.length === 1) {
+    dragging = true;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+  }
+}, { passive: true });
+
+document.addEventListener('touchmove', (e) => {
+  if (e.touches.length === 1 && dragging) {
+    viewX += e.touches[0].clientX - lastX;
+    viewY += e.touches[0].clientY - lastY;
+    lastX = e.touches[0].clientX;
+    lastY = e.touches[0].clientY;
+    g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+  }
+  if (e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    if (lastTouchDist) {
+      scale *= d / lastTouchDist;
+      scale = Math.max(0.3, Math.min(3, scale));
+      g.setAttribute('transform', `translate(${viewX}, ${viewY}) scale(${scale})`);
+    }
+    lastTouchDist = d;
+  }
+}, { passive: true });
+
+document.addEventListener('touchend', () => { dragging = false; lastTouchDist = null; });
+
+// Build
+buildMindmap();
+window.addEventListener('resize', buildMindmap);
+</script>
+</body>
+</html>
