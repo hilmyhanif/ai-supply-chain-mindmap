@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Data Ecosystem — Tahapan & Peluang Indonesia</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #f5f2eb;
+  --ink: #1a1814;
+  --ink-light: #4a4640;
+  --ink-muted: #8a8480;
+  --accent: #c45c2a;
+  --accent2: #2a6c8a;
+  --accent3: #4a8a2a;
+  --gold: #b8860b;
+  --indonesia: #d4620a;
+  --rule: rgba(26,24,20,0.12);
+  --card-bg: rgba(255,255,255,0.6);
+  --tag-bg: rgba(26,24,20,0.06);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.7;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 32px 80px;
+}
+
+/* ── HEADER ─────────────────────────────────── */
+.masthead {
+  border-bottom: 2px solid var(--ink);
+  padding: 40px 0 24px;
+  margin-bottom: 48px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 24px;
+}
+
+.masthead-eyebrow {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 12px;
+}
+
+.masthead-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: clamp(32px, 5vw, 52px);
+  line-height: 1.1;
+  font-weight: 400;
+}
+
+.masthead-title em {
+  color: var(--accent);
+  font-style: italic;
+}
+
+.masthead-meta {
+  text-align: right;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-muted);
+  letter-spacing: 1px;
+  line-height: 2;
+}
+
+/* ── SECTION HEADERS ─────────────────────────── */
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 4px;
+}
+
+h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+p {
+  font-size: 15px;
+  color: var(--ink-light);
+  margin-bottom: 12px;
+  max-width: 72ch;
+}
+
+/* ── INTRO BLOCK ─────────────────────────────── */
+.intro {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 48px;
+  margin-bottom: 64px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.intro-lead {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px;
+  line-height: 1.55;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+
+.stat-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stat-item {
+  border-left: 3px solid var(--accent);
+  padding-left: 16px;
+}
+
+.stat-number {
+  font-family: 'Instrument Serif', serif;
+  font-size: 32px;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-top: 4px;
+}
+
+/* ── PIPELINE VISUAL ─────────────────────────── */
+.pipeline-section {
+  margin-bottom: 64px;
+}
+
+.pipeline-flow {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  margin: 32px 0;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.pipeline-step {
+  flex: 1;
+  min-width: 120px;
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 20px 16px;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pipeline-step:hover {
+  background: var(--ink);
+  color: white;
+}
+
+.pipeline-step:hover .step-num,
+.pipeline-step:hover .step-name,
+.pipeline-step:hover .step-sub {
+  color: white;
+}
+
+.pipeline-step::after {
+  content: '→';
+  position: absolute;
+  right: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--ink-muted);
+  z-index: 2;
+  background: var(--bg);
+  padding: 0 2px;
+}
+
+.pipeline-step:last-child::after { display: none; }
+
+.step-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-muted);
+  letter-spacing: 2px;
+  margin-bottom: 8px;
+}
+
+.step-name {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.3;
+  margin-bottom: 6px;
+}
+
+.step-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.step-badge {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 9px;
+  font-family: 'DM Mono', monospace;
+  background: var(--tag-bg);
+  color: var(--ink-muted);
+  letter-spacing: 0.5px;
+}
+
+/* ── STAGE DETAIL CARDS ─────────────────────── */
+.stages-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+  margin-bottom: 64px;
+}
+
+.stage-card {
+  background: white;
+  border: 1px solid var(--rule);
+  padding: 28px;
+  position: relative;
+}
+
+.stage-card-num {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-family: 'Instrument Serif', serif;
+  font-size: 48px;
+  color: var(--rule);
+  line-height: 1;
+}
+
+.stage-tag {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.tag-collect { background: #fff3e0; color: #e65100; }
+.tag-clean { background: #e8f5e9; color: #2e7d32; }
+.tag-label { background: #e3f2fd; color: #1565c0; }
+.tag-synth { background: #f3e5f5; color: #6a1b9a; }
+.tag-store { background: #fce4ec; color: #880e4f; }
+.tag-market { background: #e0f7fa; color: #006064; }
+
+.stage-card h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.stage-desc {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--ink-light);
+  margin-bottom: 14px;
+}
+
+.stage-players {
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.players-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 8px;
+}
+
+.player-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  padding: 3px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 20px;
+  font-size: 11px;
+  color: var(--ink-light);
+  background: var(--tag-bg);
+}
+
+.chip.indonesia {
+  border-color: var(--indonesia);
+  color: var(--indonesia);
+  background: rgba(212,98,10,0.06);
+}
+
+.stage-market {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: var(--tag-bg);
+  border-left: 3px solid var(--accent);
+}
+
+.market-size {
+  font-family: 'Instrument Serif', serif;
+  font-size: 20px;
+  color: var(--ink);
+}
+
+.market-cagr {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+/* ── COMPARISON TABLE ─────────────────────────── */
+.table-section {
+  margin-bottom: 64px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 24px;
+}
+
+thead tr {
+  border-bottom: 2px solid var(--ink);
+}
+
+th {
+  text-align: left;
+  padding: 10px 14px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+td {
+  padding: 12px 14px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--rule);
+  line-height: 1.5;
+  color: var(--ink-light);
+}
+
+tr:hover td { background: rgba(255,255,255,0.5); }
+
+td:first-child {
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.dot-high { color: #2e7d32; font-size: 18px; }
+.dot-mid { color: #e65100; font-size: 18px; }
+.dot-low { color: #c62828; font-size: 18px; }
+
+/* ── INDONESIA OPP ───────────────────────────── */
+.indonesia-section {
+  background: linear-gradient(135deg, rgba(212,98,10,0.06) 0%, rgba(212,98,10,0.02) 100%);
+  border: 1px solid rgba(212,98,10,0.2);
+  padding: 40px;
+  margin-bottom: 64px;
+}
+
+.id-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.id-flag {
+  font-size: 36px;
+}
+
+.id-title {
+  font-family: 'Instrument Serif', serif;
+  font-size: 26px;
+  color: var(--ink);
+}
+
+.id-subtitle {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--indonesia);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.opp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+}
+
+.opp-card {
+  background: white;
+  border: 1px solid rgba(212,98,10,0.15);
+  padding: 20px;
+}
+
+.opp-rank {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--indonesia);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.opp-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+
+.opp-desc {
+  font-size: 12.5px;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+.opp-potential {
+  margin-top: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--indonesia);
+  letter-spacing: 1px;
+}
+
+/* ── SIGNAL/RISK SECTION ─────────────────────── */
+.signals-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 64px;
+}
+
+.signal-box {
+  padding: 28px;
+  border: 1px solid var(--rule);
+  background: white;
+}
+
+.signal-box.green { border-left: 4px solid #2e7d32; }
+.signal-box.red { border-left: 4px solid #c62828; }
+
+.signal-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-bottom: 16px;
+}
+
+.signal-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  color: var(--ink-light);
+  line-height: 1.5;
+}
+
+.signal-icon { flex-shrink: 0; margin-top: 2px; }
+
+/* ── FOOTER ──────────────────────────────────── */
+.footnote {
+  border-top: 1px solid var(--rule);
+  padding-top: 24px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--ink-muted);
+  letter-spacing: 1px;
+  line-height: 2;
+}
+
+/* ── RESPONSIVE ──────────────────────────────── */
+@media (max-width: 700px) {
+  body { padding: 0 16px 60px; }
+  .masthead { grid-template-columns: 1fr; }
+  .intro { grid-template-columns: 1fr; }
+  .signals-grid { grid-template-columns: 1fr; }
+  .pipeline-flow { flex-direction: column; }
+  .pipeline-step::after { content: '↓'; right: auto; left: 50%; transform: translateX(-50%); bottom: -14px; top: auto; }
+  .pipeline-step { min-width: auto; }
+}
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div class="masthead">
+  <div>
+    <div class="masthead-eyebrow">AI Supply Chain · Data Ecosystem</div>
+    <h1 class="masthead-title">
+      Data sebagai <em>Infrastruktur</em><br>AI Global
+    </h1>
+  </div>
+  <div class="masthead-meta">
+    Analisis Strategic<br>
+    Data: Feb 2025<br>
+    Fokus: Indonesia<br>
+    ––––––––<br>
+    6 Tahap Pipeline<br>
+    Global + Lokal
+  </div>
+</div>
+
+<!-- INTRO -->
+<div class="intro">
+  <div>
+    <p class="intro-lead">
+      Sebelum sebuah model AI bisa "cerdas," ia butuh ratusan miliar data yang 
+      sudah dikumpulkan, dibersihkan, dilabeli, dan divalidasi. Inilah layer 
+      paling fundamental — dan paling sering diremehkan — dari seluruh supply chain AI.
+    </p>
+    <p>
+      Jika chip adalah hardware-nya AI, maka data adalah "makanan"-nya. Tanpa data 
+      berkualitas tinggi, GPU seharga $30,000 pun hanya menghasilkan model yang 
+      buruk. Lebih dari <strong>80% waktu engineering AI</strong> dihabiskan bukan 
+      untuk membangun model, tapi untuk menyiapkan data.
+    </p>
+    <p>
+      Untuk Indonesia, data ecosystem menawarkan peluang yang <em>lebih mudah dimasuki</em> 
+      dibanding chip fabrication atau hyperscaler infrastructure — tapi juga lebih 
+      mudah dikuasai oleh India, Kenya, atau Filipina jika tidak bergerak cepat.
+    </p>
+  </div>
+  <div class="stat-stack">
+    <div class="stat-item">
+      <div class="stat-number">$7.5B</div>
+      <div class="stat-label">AI Training Data Market 2025</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">24%</div>
+      <div class="stat-label">CAGR hingga 2035</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">69%</div>
+      <div class="stat-label">Labeling di-outsource globally</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">80%</div>
+      <div class="stat-label">Waktu engineer untuk data prep</div>
+    </div>
+  </div>
+</div>
+
+<!-- PIPELINE FLOW -->
+<div class="pipeline-section">
+  <div class="section-label">Tahapan</div>
+  <h2>6 Tahap Data Pipeline AI</h2>
+  <p>Dari raw data mentah di internet hingga dataset siap latih — setiap tahap memiliki pemain, biaya, dan peluang yang berbeda.</p>
+
+  <div class="pipeline-flow">
+    <div class="pipeline-step">
+      <div class="step-num">01</div>
+      <div class="step-name">Data Collection & Sourcing</div>
+      <div class="step-sub">$2–5B segment</div>
+      <div class="step-badge">Web scraping · API · Sensor</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">02</div>
+      <div class="step-name">Data Cleaning & Preprocessing</div>
+      <div class="step-sub">~80% dev time</div>
+      <div class="step-badge">Dedup · Filter · Normalize</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">03</div>
+      <div class="step-name">Data Annotation & Labeling</div>
+      <div class="step-sub">$2.3B → $28.5B</div>
+      <div class="step-badge">Human · Semi-auto · Auto</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">04</div>
+      <div class="step-name">Quality Control & Validation</div>
+      <div class="step-sub">RLHF layer</div>
+      <div class="step-badge">Inter-annotator · Red-team</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">05</div>
+      <div class="step-name">Synthetic Data Generation</div>
+      <div class="step-sub">61% CAGR!</div>
+      <div class="step-badge">GANs · LLM · Diffusion</div>
+    </div>
+    <div class="pipeline-step">
+      <div class="step-num">06</div>
+      <div class="step-name">Data Marketplace & Monetization</div>
+      <div class="step-sub">$4.8B → $12.5B</div>
+      <div class="step-badge">License · API · Exchange</div>
+    </div>
+  </div>
+</div>
+
+<!-- STAGE DETAIL CARDS -->
+<div class="stages-grid">
+
+  <!-- CARD 1 -->
+  <div class="stage-card">
+    <div class="stage-card-num">01</div>
+    <span class="stage-tag tag-collect">Collection</span>
+    <h3>Data Collection & Sourcing</h3>
+    <div class="stage-desc">
+      Titik awal semua pipeline AI. Data dikumpulkan dari tiga sumber utama: 
+      web scraping (Common Crawl memproses 3B+ halaman/bulan), API dari platform 
+      digital, dan sensor fisik (kamera, LiDAR, IoT). Kualitas di sini menentukan 
+      segalanya — "garbage in, garbage out."
+      <br><br>
+      Krisis besar: <strong>Data internet sudah hampir habis</strong>. Epoch AI 
+      memperkirakan web text berkualitas akan "habis" untuk pelatihan LLM pada 
+      2026–2027. Itulah kenapa synthetic data meledak.
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Key Players</div>
+      <div class="player-chips">
+        <span class="chip">Common Crawl</span>
+        <span class="chip">Appen</span>
+        <span class="chip">TELUS Int'l</span>
+        <span class="chip">Surge AI</span>
+        <span class="chip indonesia">GiniTalent ID</span>
+        <span class="chip indonesia">NgopiData</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">$2–5B</div>
+      <div class="market-cagr">segment size · ~20% CAGR</div>
+    </div>
+  </div>
+
+  <!-- CARD 2 -->
+  <div class="stage-card">
+    <div class="stage-card-num">02</div>
+    <span class="stage-tag tag-clean">Preprocessing</span>
+    <h3>Data Cleaning & Preprocessing</h3>
+    <div class="stage-desc">
+      Tahap paling "tersembunyi" tapi menyita waktu terbesar. Proses mencakup 
+      deduplication (buang data kembar), filtering (hapus konten berbahaya/NSFW), 
+      normalization (standarisasi format), dan tokenization (konversi teks ke token).
+      <br><br>
+      GPT-4 dilatih dari ~13T token yang sudah melalui cleaning berlapis. 
+      Tools dominan: Apache Spark, Hugging Face <em>datasets</em>, 
+      deduplicate-text-datasets. <strong>Untuk Bahasa Indonesia</strong>: 
+      sangat kekurangan pipeline cleaning yang memahami konteks lokal.
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Tools & Players</div>
+      <div class="player-chips">
+        <span class="chip">Apache Spark</span>
+        <span class="chip">Databricks</span>
+        <span class="chip">Hugging Face</span>
+        <span class="chip">DataRobot</span>
+        <span class="chip indonesia">Prosa.ai</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">~80% waktu dev</div>
+      <div class="market-cagr">embedded dalam MLOps stack</div>
+    </div>
+  </div>
+
+  <!-- CARD 3 -->
+  <div class="stage-card">
+    <div class="stage-card-num">03</div>
+    <span class="stage-tag tag-label">Annotation</span>
+    <h3>Data Annotation & Labeling</h3>
+    <div class="stage-desc">
+      Ini tahap yang paling labor-intensive dan paling terbuka untuk Indonesia.
+      Annotator manusia memberikan label: "ini gambar kucing," "kalimat ini 
+      positif," "respons AI ini berbahaya."
+      <br><br>
+      Tiga mode: <strong>Manual</strong> (75% market, presisi tinggi), 
+      <strong>Semi-auto</strong> (AI pre-label + human review, potong waktu 40%), 
+      <strong>Automated</strong> (38% CAGR — tapi masih butuh human untuk edge cases).
+      <br><br>
+      Meta beli 49% Scale AI senilai $15B pada Juni 2025. Ini sinyal: 
+      <em>data annotation adalah aset strategis, bukan komoditas.</em>
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Key Players Global → Indonesia</div>
+      <div class="player-chips">
+        <span class="chip">Scale AI ($29B)</span>
+        <span class="chip">Appen</span>
+        <span class="chip">Labelbox</span>
+        <span class="chip">CloudFactory</span>
+        <span class="chip indonesia">Gini Talent</span>
+        <span class="chip indonesia">IndoAnnotate</span>
+        <span class="chip indonesia">CrowdBina</span>
+        <span class="chip indonesia">AI TrainID</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">$2.3B → $28.5B</div>
+      <div class="market-cagr">28.6% CAGR · 2024–2034</div>
+    </div>
+  </div>
+
+  <!-- CARD 4 -->
+  <div class="stage-card">
+    <div class="stage-card-num">04</div>
+    <span class="stage-tag tag-label">QC / RLHF</span>
+    <h3>Quality Control & RLHF</h3>
+    <div class="stage-desc">
+      Setelah labeling, data divalidasi untuk konsistensi (inter-annotator 
+      agreement), lalu digunakan dalam <strong>RLHF</strong> — Reinforcement 
+      Learning from Human Feedback — untuk "mengajarkan" model AI mana respons 
+      yang baik vs buruk.
+      <br><br>
+      ChatGPT, Claude, Gemini — semua bergantung pada ribuan jam RLHF dari 
+      evaluator manusia. Red-teaming (mencoba "menjebak" model) juga bagian tahap ini.
+      Ini butuh evaluator dengan <em>cultural context</em> — peluang besar 
+      untuk Indonesia yang memahami konteks lokal Bahasa Indonesia.
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Key Players</div>
+      <div class="player-chips">
+        <span class="chip">Scale AI (RLHF)</span>
+        <span class="chip">Surge AI</span>
+        <span class="chip">Invisible AI</span>
+        <span class="chip">DataAnnotation.tech</span>
+        <span class="chip indonesia">DataAnnotation ID</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">Embedded</div>
+      <div class="market-cagr">dalam annotation market · fast growing</div>
+    </div>
+  </div>
+
+  <!-- CARD 5 -->
+  <div class="stage-card">
+    <div class="stage-card-num">05</div>
+    <span class="stage-tag tag-synth">Synthetic</span>
+    <h3>Synthetic Data Generation</h3>
+    <div class="stage-desc">
+      Segmen paling eksplosif. AI-generated data untuk melatih AI — 
+      recursive tapi powerful. Gunanya: atasi kelangkaan data nyata, 
+      lindungi privasi, ciptakan edge cases langka (kecelakaan, penyakit).
+      <br><br>
+      <strong>Proyeksi: 60% data AI training akan synthetic pada 2025–2026.</strong>
+      Tools: NVIDIA Omniverse (3D/visual), Microsoft Azure AI, 
+      Syntho (tabular), Mostly AI.
+      <br><br>
+      Untuk Indonesia: synthetic data Bahasa Indonesia bisa selesaikan 
+      masalah scarcity data lokal untuk Sahabat-AI dan model-model Bahasa Indonesia.
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Key Players</div>
+      <div class="player-chips">
+        <span class="chip">NVIDIA Omniverse</span>
+        <span class="chip">Mostly AI</span>
+        <span class="chip">Syntho</span>
+        <span class="chip">Gretel.ai</span>
+        <span class="chip indonesia">GoTo R&D</span>
+        <span class="chip indonesia">Sahabat-AI</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">+$4.4B (2024–29)</div>
+      <div class="market-cagr">61.1% CAGR — tercepat di pipeline</div>
+    </div>
+  </div>
+
+  <!-- CARD 6 -->
+  <div class="stage-card">
+    <div class="stage-card-num">06</div>
+    <span class="stage-tag tag-market">Marketplace</span>
+    <h3>Data Marketplace & Monetization</h3>
+    <div class="stage-desc">
+      Layer teratas: data diperjualbelikan sebagai aset. Model bisnis: 
+      <strong>licensing</strong> (bayar per dataset), <strong>Data-as-a-Service</strong> 
+      (subscription API), <strong>data exchange</strong> (peer-to-peer).
+      <br><br>
+      Data Monetization Platform market: $2.6B (2024) → $29.8B (2034). 
+      Tren baru: <em>data tokenization</em> via blockchain untuk IP protection, 
+      dan <em>clean rooms</em> di mana kompetitor bisa kolaborasi tanpa ekspos raw data.
+      <br><br>
+      Indonesia peluang: <strong>data lokalisasi mandiri</strong> — UU PDP 2022 
+      mewajibkan data citizen WNI disimpan di Indonesia, menciptakan captive dataset.
+    </div>
+    <div class="stage-players">
+      <div class="players-label">Key Players</div>
+      <div class="player-chips">
+        <span class="chip">Databricks Marketplace</span>
+        <span class="chip">LiveRamp</span>
+        <span class="chip">Veritone VDR</span>
+        <span class="chip">Innodata</span>
+        <span class="chip indonesia">Data.go.id (gov)</span>
+        <span class="chip indonesia">Opportunity!</span>
+      </div>
+    </div>
+    <div class="stage-market">
+      <div class="market-size">$4.8B → $12.5B</div>
+      <div class="market-cagr">21% CAGR · Data Monetization Platform</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- COMPARISON TABLE -->
+<div class="table-section">
+  <div class="section-label">Perbandingan</div>
+  <h2>Kondisi Data Ecosystem: Indonesia vs Kompetitor</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Dimensi</th>
+        <th>Indonesia 🇮🇩</th>
+        <th>India 🇮🇳</th>
+        <th>Kenya/Afrika 🌍</th>
+        <th>Filipina 🇵🇭</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Annotation workforce</td>
+        <td>Emerging, scattered<br><span style="color:var(--indonesia);font-size:11px">Gini Talent, IndoAnnotate</span></td>
+        <td><span class="dot-high">●</span> Sangat matang<br>BPO ecosystem kuat</td>
+        <td><span class="dot-mid">●</span> Samasource, iMerit<br>Growing fast</td>
+        <td><span class="dot-mid">●</span> English fluent<br>BPO-trained workforce</td>
+      </tr>
+      <tr>
+        <td>Bahasa unique asset</td>
+        <td><span class="dot-high">●</span> Bahasa Indonesia<br>280M speakers, underserved</td>
+        <td>Hindi + 22 bahasa<br>Kompetitif</td>
+        <td>Swahili, dll.<br>Niche</td>
+        <td>Filipino/English<br>Kompetitif</td>
+      </tr>
+      <tr>
+        <td>Cost per annotation hour</td>
+        <td>$3–8/jam<br>Kompetitif</td>
+        <td>$2–6/jam<br>Lebih murah</td>
+        <td>$1–4/jam<br>Termurah</td>
+        <td>$4–9/jam<br>Setara</td>
+      </tr>
+      <tr>
+        <td>Data privacy regulation</td>
+        <td>UU PDP 2022<br><span style="color:var(--indonesia);font-size:11px">Authority belum dibentuk!</span></td>
+        <td>DPDP Act 2023<br>Lebih mature</td>
+        <td>KDPA 2019<br>Moderate</td>
+        <td>DPA 2012<br>Mature</td>
+      </tr>
+      <tr>
+        <td>Government data assets</td>
+        <td>280M citizen data<br>Massive, tapi terfragmentasi</td>
+        <td>Aadhaar 1.4B records<br>Sangat terstruktur</td>
+        <td>M-Pesa financial<br>Niche tapi kuat</td>
+        <td>PhilSys ID<br>Moderate</td>
+      </tr>
+      <tr>
+        <td>Local AI training data</td>
+        <td>Sahabat-AI dataset<br>IndoNLU, IndoNLG</td>
+        <td>AI4Bharat<br>Sangat lengkap</td>
+        <td>Masakhane (open)<br>Community-driven</td>
+        <td>Limited<br>English-dominant</td>
+      </tr>
+      <tr>
+        <td>Synthetic data capability</td>
+        <td><span class="dot-low">●</span> Sangat awal<br>Gap besar</td>
+        <td><span class="dot-mid">●</span> Growing<br>Startup ekosistem</td>
+        <td><span class="dot-low">●</span> Minimal</td>
+        <td><span class="dot-low">●</span> Minimal</td>
+      </tr>
+      <tr>
+        <td>Data marketplace</td>
+        <td><span class="dot-low">●</span> Belum ada<br>Peluang besar!</td>
+        <td><span class="dot-mid">●</span> India Data Portal<br>Awal berkembang</td>
+        <td><span class="dot-low">●</span> Minimal</td>
+        <td><span class="dot-low">●</span> Minimal</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- INDONESIA OPPORTUNITIES -->
+<div class="indonesia-section">
+  <div class="id-header">
+    <div class="id-flag">🇮🇩</div>
+    <div>
+      <div class="id-title">Peluang Strategis Indonesia</div>
+      <div class="id-subtitle">5 Entry Point di Data Ecosystem</div>
+    </div>
+  </div>
+
+  <div class="opp-grid">
+    <div class="opp-card">
+      <div class="opp-rank">Peluang #1 · Tertinggi</div>
+      <div class="opp-title">Annotation Hub untuk Bahasa Indonesia & Regional</div>
+      <div class="opp-desc">
+        Bahasa Indonesia adalah bahasa ke-10 terbanyak di internet tapi 
+        sangat underserved di AI training. 280M speakers, aksen & dialek 
+        beragam = kebutuhan annotator lokal yang paham konteks.
+        Kompetitor terdekat (India) tidak bisa replika ini.
+      </div>
+      <div class="opp-potential">→ Target: $500M–1B revenue by 2030</div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-rank">Peluang #2 · High</div>
+      <div class="opp-title">RLHF & Cultural Alignment untuk LLM</div>
+      <div class="opp-desc">
+        Semua LLM global (OpenAI, Anthropic, Google) butuh evaluator yang 
+        pahami nuansa budaya lokal untuk RLHF. Indonesia — dengan keberagaman 
+        budaya, hukum lokal, dan konteks sosial unik — adalah kandidat ideal 
+        untuk "align" AI agar aman dan relevan di pasar Asia Tenggara.
+      </div>
+      <div class="opp-potential">→ $20/jam+ untuk qualified evaluator</div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-rank">Peluang #3 · High</div>
+      <div class="opp-title">Synthetic Bahasa Indonesia Data</div>
+      <div class="opp-desc">
+        Sahabat-AI butuh lebih banyak data Bahasa Indonesia — tapi datanya 
+        langka. Membangun synthetic data pipeline khusus Bahasa Indonesia 
+        (text, audio, gambar berlabel ID-context) bisa jadi moat yang kuat 
+        dan bisa dilisensikan ke LLM global.
+      </div>
+      <div class="opp-potential">→ IP asset yang bisa dilisensikan globally</div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-rank">Peluang #4 · Medium</div>
+      <div class="opp-title">National Data Marketplace / Exchange</div>
+      <div class="opp-desc">
+        UU PDP 2022 mewajibkan data citizen Indonesia disimpan di dalam negeri.
+        Ini menciptakan captive pool dataset yang masif. Pemerintah bisa 
+        membangun sovereign data marketplace — analognya China dengan 
+        "data element trading" di Shanghai Data Exchange.
+      </div>
+      <div class="opp-potential">→ Model: Shanghai Data Exchange (¥30B+ 2024)</div>
+    </div>
+
+    <div class="opp-card">
+      <div class="opp-rank">Peluang #5 · Medium</div>
+      <div class="opp-title">Sektor Data Vertikal: Agri, Health, Maritime</div>
+      <div class="opp-desc">
+        Indonesia punya unique sectoral data yang tidak dimiliki negara lain: 
+        pola pertanian sawit/padi (270M hektar lahan), data kelautan (2nd 
+        largest exclusive economic zone), dan data kesehatan 280M penduduk 
+        lintas iklim tropis. Semua ini bernilai tinggi untuk AI domain-specific.
+      </div>
+      <div class="opp-potential">→ Niche tapi defensible — no direct competitor</div>
+    </div>
+
+    <div class="opp-card" style="background: rgba(212,98,10,0.06); border-color: rgba(212,98,10,0.3);">
+      <div class="opp-rank" style="color:var(--accent);">Risiko Terbesar</div>
+      <div class="opp-title" style="color:var(--accent);">India & Filipina Sudah Bergerak</div>
+      <div class="opp-desc">
+        India punya Samasource, iMerit, dan ekosistem BPO yang jauh lebih 
+        matang. Filipina punya English fluency + BPO culture. Window peluang 
+        untuk Indonesia ada di <em>bahasa dan konteks lokal</em> — tapi harus 
+        dibangun sekarang sebelum otomatisasi annotation mengikis keunggulan 
+        labor cost.
+      </div>
+      <div class="opp-potential" style="color:var(--accent);">→ Window: 3–5 tahun sebelum automation dominan</div>
+    </div>
+  </div>
+</div>
+
+<!-- SIGNALS & RISKS -->
+<div class="signals-grid">
+  <div class="signal-box green">
+    <div class="signal-label">📈 Tailwinds untuk Indonesia</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> Bahasa Indonesia ke-10 terbanyak di internet, sangat underrepresented di AI</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> 92% knowledge workers Indonesia sudah pakai generative AI — awareness tinggi</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> UU PDP 2022 ciptakan data localization mandate — captive dataset</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> Prakerja & Microsoft elevAIte — 1M+ orang sedang di-reskill ke AI</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> Sahabat-AI membuktikan LLM Bahasa Indonesia feasible dan diminati</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> DataAnnotation.tech sudah rekrut annotator Indonesia Bilingual</div>
+    <div class="signal-item"><span class="signal-icon">✓</span> Asia-Pacific fastest growing annotation region: 29.8% CAGR</div>
+  </div>
+  <div class="signal-box red">
+    <div class="signal-label">⚠️ Headwinds & Gap</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> Data Protection Authority dari UU PDP 2022 belum dibentuk — enforcement vacuum</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> R&D spending 0.28% GDP — tidak ada budget untuk bangun data infrastructure sovereign</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> Annotation industry masih sangat fragmented, tidak ada Scale AI versi Indonesia</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> Automated labeling tools (CAGR 38%) akan erode labor cost advantage dalam 3–5 tahun</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> India jauh lebih siap: Samasource, iMerit, ekosistem BPO mature</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> English proficiency rendah (rank 80/123) batasi akses kontrak internasional</div>
+    <div class="signal-item"><span class="signal-icon">✗</span> Government data terfragmentasi antar K/L — tidak bisa dimonetize</div>
+  </div>
+</div>
+
+<!-- FOOTNOTE -->
+<div class="footnote">
+  Sumber: Mordor Intelligence (2025) · MarketsandMarkets (2024) · Grand View Research (2025) · Technavio (2025) · 
+  Precedence Research (2025) · Gini Talent Indonesia · Medium/Daffa Ghiffary AI Indonesia Report (2025) ·
+  DataAnnotation.tech Indonesia Program (2025) · Veritone AI (2025) · LiveRamp Data Marketplace (Jan 2026)
+  <br>
+  Disusun: Feb 2026 · Strategic Overview · Fokus: Indonesia AI Data Ecosystem
+</div>
+
+</body>
+</html>
