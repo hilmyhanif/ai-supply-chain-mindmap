@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layer 1: Physical & Industrial Base of AI Systems</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: rgba(255,255,255,0.07);
+    --accent: #c8a96e;
+    --accent2: #4a9eff;
+    --accent3: #5de8c5;
+    --text: #e8eaf0;
+    --text-muted: #7a8099;
+    --text-dim: #4a5068;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(10,12,16,0.92);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .nav-links {
+    display: flex; gap: 32px;
+    list-style: none;
+  }
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 60px 80px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: 
+      radial-gradient(ellipse 60% 50% at 80% 30%, rgba(74,158,255,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 70%, rgba(200,169,110,0.06) 0%, transparent 60%),
+      linear-gradient(180deg, #0a0c10 0%, #0d1018 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image: 
+      linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+  }
+  .hero-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .hero-tag::before {
+    content: '';
+    display: block; width: 40px; height: 1px;
+    background: var(--accent);
+  }
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(42px, 6vw, 88px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    position: relative;
+    max-width: 900px;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-sub {
+    margin-top: 32px;
+    font-size: 16px;
+    color: var(--text-muted);
+    max-width: 520px;
+    position: relative;
+    line-height: 1.8;
+  }
+  .hero-stats {
+    display: flex; gap: 48px;
+    margin-top: 56px;
+    position: relative;
+  }
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 600;
+    color: var(--accent2);
+    line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+  }
+  .scroll-cue {
+    position: absolute; bottom: 32px; right: 80px;
+    display: flex; align-items: center; gap: 10px;
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(6px)} }
+
+  /* SECTIONS */
+  section { padding: 100px 80px; position: relative; }
+  section:nth-child(even) { background: var(--surface); }
+
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 3.5vw, 48px);
+    font-weight: 600;
+    line-height: 1.15;
+    margin-bottom: 48px;
+    max-width: 700px;
+  }
+  h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: var(--text);
+  }
+  p { color: var(--text-muted); margin-bottom: 16px; font-size: 15px; }
+  strong { color: var(--text); font-weight: 500; }
+
+  /* DEFINITION GRID */
+  .def-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 16px;
+  }
+  .def-card {
+    background: var(--surface2);
+    padding: 36px;
+    border: 1px solid var(--border);
+    transition: border-color 0.3s;
+  }
+  .def-card:hover { border-color: rgba(200,169,110,0.3); }
+  .def-card .icon {
+    font-size: 28px; margin-bottom: 16px;
+  }
+
+  /* CHIP TYPES */
+  .chip-row {
+    display: flex; gap: 2px;
+    margin: 32px 0;
+  }
+  .chip-card {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, border-color 0.3s;
+  }
+  .chip-card:hover { transform: translateY(-3px); border-color: rgba(74,158,255,0.3); }
+  .chip-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .chip-name { font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+  .chip-desc { font-size: 13px; color: var(--text-muted); }
+
+  /* GLOBAL STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin: 32px 0;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 32px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .stat-card:hover::before { opacity: 1; }
+  .stat-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .stat-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* PLAYERS TABLE */
+  .players-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px;
+    margin: 32px 0;
+  }
+  .player-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    padding: 32px;
+    transition: border-color 0.3s;
+  }
+  .player-card:hover { border-color: rgba(93,232,197,0.25); }
+  .player-region {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--accent3);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .player-list { list-style: none; }
+  .player-list li {
+    font-size: 13px;
+    color: var(--text-muted);
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .player-list li::before { content: '→'; color: var(--accent2); flex-shrink: 0; }
+
+  /* INDONESIA */
+  .indo-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 64px;
+    align-items: start;
+  }
+  .indo-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+  }
+  .indo-stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+  }
+  .indo-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .indo-stat-desc { font-size: 11px; color: var(--text-dim); }
+
+  /* CHALLENGES vs OPPORTUNITIES */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px; }
+  .panel {
+    padding: 36px;
+    border: 1px solid var(--border);
+  }
+  .panel-challenge { background: rgba(255,80,80,0.04); }
+  .panel-oppty { background: rgba(93,232,197,0.04); }
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .panel-challenge .panel-title { color: #ff8080; }
+  .panel-oppty .panel-title { color: var(--accent3); }
+  .item-list { list-style: none; }
+  .item-list li {
+    font-size: 14px;
+    color: var(--text-muted);
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px;
+    align-items: flex-start;
+  }
+  .item-list li:last-child { border-bottom: none; }
+  .bullet-c { color: #ff8080; flex-shrink: 0; }
+  .bullet-o { color: var(--accent3); flex-shrink: 0; }
+
+  /* ROADMAP */
+  .roadmap {
+    display: flex; flex-direction: column; gap: 2px;
+    margin-top: 32px;
+  }
+  .roadmap-item {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+  }
+  .roadmap-label {
+    padding: 28px 24px;
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .roadmap-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .roadmap-cat {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 4px;
+  }
+  .roadmap-body { padding: 28px 32px; }
+  .roadmap-body h4 {
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 8px;
+  }
+  .roadmap-body p { font-size: 13px; margin-bottom: 0; }
+
+  /* RESOURCES */
+  .resources { background: var(--surface2) !important; }
+  .res-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 32px;
+  }
+  .res-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px 28px;
+    transition: border-color 0.3s;
+  }
+  .res-card:hover { border-color: rgba(200,169,110,0.3); }
+  .res-cat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--accent);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .res-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 6px;
+  }
+  .res-url {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    word-break: break-all;
+  }
+
+  /* QUOTE */
+  .quote-block {
+    margin: 48px 0;
+    padding: 40px;
+    border-left: 3px solid var(--accent);
+    background: var(--surface2);
+    position: relative;
+  }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--text);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .quote-attr {
+    font-size: 12px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 80px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-note {
+    font-size: 12px; color: var(--text-dim);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* DIVIDER */
+  .divider {
+    width: 60px; height: 1px;
+    background: var(--accent);
+    margin: 24px 0;
+  }
+
+  /* Fade-in animation */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-up {
+    animation: fadeUp 0.7s ease both;
+  }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.35s; }
+  .delay-4 { animation-delay: 0.5s; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    section { padding: 64px 24px; }
+    .hero { padding: 80px 24px 60px; }
+    .def-grid, .players-grid, .two-col, .indo-layout, .res-grid, .stats-grid { grid-template-columns: 1fr; }
+    .chip-row { flex-direction: column; }
+    .roadmap-item { grid-template-columns: 1fr; }
+    .roadmap-label { border-right: none; border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; gap: 12px; padding: 32px 24px; }
+    .hero-stats { flex-wrap: wrap; gap: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Layer 1 — AI Systems Report</div>
+  <ul class="nav-links">
+    <li><a href="#definition">Foundation</a></li>
+    <li><a href="#global">Global Leaders</a></li>
+    <li><a href="#indonesia">Indonesia</a></li>
+    <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#resources">Resources</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-tag fade-up">Strategic Industry Report · 2025</div>
+  <h1 class="fade-up delay-1">Layer 1: Physical &amp; <em>Industrial Base</em> of AI Systems</h1>
+  <p class="hero-sub fade-up delay-2">An analysis of global semiconductor infrastructure, key players, and Indonesia's strategic position in the AI hardware supply chain.</p>
+  <div class="hero-stats fade-up delay-3">
+    <div>
+      <div class="hero-stat-num">~50%</div>
+      <div class="hero-stat-label">Global foundry chips via TSMC</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">$7.1B</div>
+      <div class="hero-stat-label">Indonesia semi market by 2030</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">340M</div>
+      <div class="hero-stat-label">Tons of silica sand reserves (ID)</div>
+    </div>
+  </div>
+  <div class="scroll-cue">↓ Scroll to explore</div>
+</div>
+
+<!-- DEFINITION -->
+<section id="definition">
+  <div class="section-tag">01 — Definition</div>
+  <h2>What Is the Physical Industrial Base?</h2>
+  <p>The physical/industrial base of AI refers to the <strong>hardware infrastructure and manufacturing industries</strong> that form the foundation of all AI systems. This layer encompasses semiconductor chips, the equipment and materials to produce them, and the facilities (fabs, labs, factories) that build and assemble computing devices.</p>
+  <p>Modern AI relies on integrated circuits packed with <strong>billions of nanometer-scale transistors</strong>, fabricated on silicon wafers using advanced photolithography—etching extremely fine circuit patterns via ultraviolet lasers and chemical processing. Since early microprocessors in the 1970s, the industry has followed Moore's Law, relentlessly improving chip density and performance to power today's AI accelerators.</p>
+
+  <div class="chip-row">
+    <div class="chip-card">
+      <div class="chip-label">General Purpose</div>
+      <div class="chip-name">CPU</div>
+      <div class="chip-desc">Central Processing Unit — handles broad computational tasks and orchestration across systems.</div>
+    </div>
+    <div class="chip-card">
+      <div class="chip-label">Graphics Processing</div>
+      <div class="chip-name">GPU</div>
+      <div class="chip-desc">Graphics Processing Unit — massively parallel architecture, now the default for AI model training.</div>
+    </div>
+    <div class="chip-card">
+      <div class="chip-label">AI Accelerators</div>
+      <div class="chip-name">NPU / TPU</div>
+      <div class="chip-desc">Neural Processing Units & Tensor Processing Units — purpose-built to speed up neural-network math.</div>
+    </div>
+    <div class="chip-card">
+      <div class="chip-label">Memory</div>
+      <div class="chip-name">HBM / DRAM</div>
+      <div class="chip-desc">High-Bandwidth Memory and DRAM — critical for handling the vast datasets AI models require.</div>
+    </div>
+  </div>
+
+  <div class="def-grid">
+    <div class="def-card">
+      <div class="icon">⚙️</div>
+      <h3>A Global Supply Chain</h3>
+      <p>Designing and mass-producing advanced chips is enormously complex — no single country or company can do it all. The chain spans raw material extraction, wafer fabrication, chip packaging, and final device assembly, involving dozens of specialized players worldwide.</p>
+    </div>
+    <div class="def-card">
+      <div class="icon">🔬</div>
+      <h3>EUV Lithography as a Chokepoint</h3>
+      <p>Extreme ultraviolet (EUV) lithography machines are essential for chips at 7nm and below. Netherlands-based <strong>ASML</strong> is the sole global supplier of these systems — making it one of the most strategically critical companies in the entire AI stack.</p>
+    </div>
+    <div class="def-card">
+      <div class="icon">🏗️</div>
+      <h3>Wafer Fabs & Assembly</h3>
+      <p>Chips are fabricated in ultra-clean, capital-intensive foundries. Once wafers are cut into dies, they undergo assembly, packaging, and testing before integration into servers, smartphones, or IoT devices.</p>
+    </div>
+    <div class="def-card">
+      <div class="icon">🖥️</div>
+      <h3>Supercomputers & AI Servers</h3>
+      <p>In practice, AI hardware is deployed in racks of CPU/GPU/TPU cards with massive parallelism and fast interconnects. Cutting-edge supercomputers aggregate <strong>thousands of processors</strong>, enabling training of large AI models at unprecedented speeds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GLOBAL LEADERSHIP -->
+<section id="global">
+  <div class="section-tag">02 — Global Leadership</div>
+  <h2>Key Players & Best Practices Worldwide</h2>
+  <p>Globally, a handful of countries and companies lead in AI hardware. <strong>Specialization is the norm</strong> — different regions excel at different parts of the supply chain.</p>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-big">~50%</div>
+      <div class="stat-desc">World's foundry chips produced by TSMC (Taiwan)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">60%</div>
+      <div class="stat-desc">HBM market share held by SK Hynix (South Korea)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">>80%</div>
+      <div class="stat-desc">Global lithography machine market — ASML (Netherlands)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">#1</div>
+      <div class="stat-desc">NVIDIA in AI accelerators — GPU default for ML training</div>
+    </div>
+  </div>
+
+  <div class="players-grid">
+    <div class="player-card">
+      <div class="player-region">🇹🇼 Taiwan · 🇰🇷 South Korea</div>
+      <h3>Chip Fabrication</h3>
+      <ul class="player-list">
+        <li>TSMC — world's largest contract chipmaker; produces chips for Apple, NVIDIA, AMD</li>
+        <li>Samsung — 2nd largest semiconductor manufacturer; leader in memory</li>
+        <li>SK Hynix — dominant in high-bandwidth memory (HBM) for AI</li>
+        <li>Micron (USA) — top-3 memory supplier globally</li>
+      </ul>
+    </div>
+    <div class="player-card">
+      <div class="player-region">🇺🇸 United States</div>
+      <h3>Chip Design & IP</h3>
+      <ul class="player-list">
+        <li>NVIDIA — market leader in AI accelerators; CUDA platform standard for ML</li>
+        <li>AMD & Intel — major processor designers</li>
+        <li>Google, Amazon, Microsoft — custom AI chips (TPU, Inferentia, etc.)</li>
+        <li>Cadence & Synopsys — EDA software dominance</li>
+        <li>Applied Materials & Lam Research — fabrication equipment</li>
+      </ul>
+    </div>
+    <div class="player-card">
+      <div class="player-region">🇳🇱 Netherlands · 🇯🇵 Japan · 🇩🇪 Germany</div>
+      <h3>Equipment & Materials</h3>
+      <ul class="player-list">
+        <li>ASML — sole supplier of EUV lithography; monopoly in critical tooling</li>
+        <li>Japanese firms — photoresists, ultra-pure chemicals for fabrication</li>
+        <li>ZEISS (Germany) — specialized optics for ASML's lithography machines</li>
+        <li>Key contributors in silicon wafer materials & precision equipment</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="quote-text">"AI is essential national infrastructure."</div>
+    <div class="quote-attr">Jensen Huang, CEO — NVIDIA · World Economic Forum, Davos</div>
+  </div>
+
+  <p>Leading nations share common success factors: <strong>sustained R&D investment</strong> (billions annually), <strong>clustered ecosystems</strong> (e.g., Taiwan's Hsinchu Science Park linking universities, ITRI, and industry since the 1980s), and <strong>strategic government policy</strong> (South Korea's memory chip rise; the U.S. CHIPS Act for onshore fab capacity). Recent export controls — including U.S. curbs on top AI chips to China — underscore how strategically critical these assets have become.</p>
+</section>
+
+<!-- INDONESIA -->
+<section id="indonesia">
+  <div class="section-tag">03 — Indonesia's Position</div>
+  <h2>Indonesia: Current Standing &amp; Strategic Potential</h2>
+
+  <div class="indo-layout">
+    <div>
+      <p>Indonesia is currently a <strong>small but growing participant</strong> in the semiconductor hardware arena. Its activity has so far been concentrated in the back-end of the supply chain — assembly, testing, and packaging — rather than high-end chip fabrication or design.</p>
+      <p>Companies like Germany's <strong>Infineon</strong> operate assembly and test facilities in Batam, leveraging Indonesia's competitive labor costs and strategic Southeast Asian location. This foothold in packaging and assembly represents an important link in the chain — though generally lower value-add than design or fabrication.</p>
+      <div class="divider"></div>
+      <p>Indonesia's <strong>natural resource endowments</strong> and large demographics offer meaningful upside. Rather than exporting raw materials, there is a significant opportunity to develop local downstream processing — such as converting silica into wafer stock — to capture more value domestically.</p>
+      <p>The government has signaled ambition: it has formed a <strong>Semiconductor Task Force</strong> and committed an initial <strong>$125 million</strong> in partnership with <strong>ARM Holdings</strong> (UK) to develop a national chip design ecosystem, training Indonesian engineers on ARM architecture.</p>
+    </div>
+    <div>
+      <div class="indo-stats">
+        <div class="indo-stat">
+          <div class="indo-stat-num">26th</div>
+          <div class="indo-stat-desc">Global rank in semiconductor device exports</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">84.6%</div>
+          <div class="indo-stat-desc">Share of semiconductor exports that are integrated circuits (2024)</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">340M</div>
+          <div class="indo-stat-desc">Tons of estimated silica sand reserves</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">$125M</div>
+          <div class="indo-stat-desc">Initial investment with ARM Holdings for chip design ecosystem</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">$5.1B</div>
+          <div class="indo-stat-desc">Semiconductor market size, 2025 (projected)</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">$7.1B</div>
+          <div class="indo-stat-desc">Projected market by 2030 (6.8% CAGR)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel panel-challenge">
+      <div class="panel-title">⚠ Challenges</div>
+      <ul class="item-list">
+        <li><span class="bullet-c">✕</span>No cutting-edge wafer fabs; domestic production at sub-28nm is effectively nonexistent</li>
+        <li><span class="bullet-c">✕</span>Trails Malaysia, Vietnam, and Singapore in established semiconductor hubs</li>
+        <li><span class="bullet-c">✕</span>Significant skills gap — shortage of experienced semiconductor engineers; talent goes abroad</li>
+        <li><span class="bullet-c">✕</span>Bureaucratic hurdles and unclear industrial strategies deter large investors</li>
+        <li><span class="bullet-c">✕</span>Infrastructure concerns: inconsistent power supply and clean water access for advanced manufacturing</li>
+        <li><span class="bullet-c">✕</span>Near-total reliance on imported semiconductors for domestic industry</li>
+      </ul>
+    </div>
+    <div class="panel panel-oppty">
+      <div class="panel-title">✦ Opportunities</div>
+      <ul class="item-list">
+        <li><span class="bullet-o">✓</span>340 million tons of silica sand — potential upstream position in wafer production</li>
+        <li><span class="bullet-o">✓</span>Young, large talent pool and growing base of engineering graduates</li>
+        <li><span class="bullet-o">✓</span>Strategic geographic location as a logistics hub in ASEAN</li>
+        <li><span class="bullet-o">✓</span>Existing assembly/test foothold via international firms (Infineon, Batam)</li>
+        <li><span class="bullet-o">✓</span>ARM partnership and Semiconductor Task Force signal policy momentum</li>
+        <li><span class="bullet-o">✓</span>Rising domestic market demand across electronics, automotive, and ICT sectors</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="section-tag">04 — Ecosystem Roadmap</div>
+  <h2>Building Indonesia's AI Hardware Ecosystem</h2>
+  <p>Becoming a significant player in the global AI hardware supply chain requires concerted action across four pillars:</p>
+
+  <div class="roadmap">
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-cat">Policy</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>National Strategy & Regulatory Clarity</h4>
+        <p>Formulate a clear national semiconductor strategy with defined targets — production milestones, priority segments (AI chips, automotive MCUs), and export objectives. Streamline regulations: tax incentives for fabs and design centers, simplified import/export procedures for high-tech equipment, and robust IP protection to reassure investors. Malaysia's national electronics plan and India's semiconductor mission offer actionable reference models.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-cat">Talent</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Human Capital Development</h4>
+        <p>Strengthen university and vocational curricula in semiconductor physics, microelectronics, and AI hardware engineering. Establish partnerships with leading institutions in the US, Taiwan, and India for knowledge transfer. Offer government scholarships for specialization in chip design and fabrication — with commitments to return and build local industry. Address brain drain by creating competitive career paths and research opportunities domestically.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-cat">Infrastructure</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Industrial Infrastructure & Manufacturing Zones</h4>
+        <p>Upgrade industrial parks with cleanroom facilities, stable power, ultra-pure water supply, and efficient logistics. Consider a dedicated "chip manufacturing zone" with streamlined customs. Invest in upstream capabilities — local wafer slicing, polishing, and packaging substrate production from domestic silica. Court targeted foreign investment: invite foundries for mature-node fabs (28nm–45nm), and expand OSAT operations through public-private partnerships.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">04</div>
+        <div class="roadmap-cat">R&D</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Research, Innovation & International Collaboration</h4>
+        <p>Establish a centralized Semiconductor Research Center bringing together government labs, universities, and industry. Focus on niche areas aligned with Indonesia's context — AI chips optimized for local languages, or power-efficient designs for tropical environments. Expand the ARM partnership model to include South Korea, Japan, and the US. Position Indonesia within ASEAN semiconductor consortia and Quad/Chip4 supply chain security alliances to accelerate the learning curve through mentorship and technology transfer.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote-block" style="margin-top:48px">
+    <div class="quote-text">"The goal is to transition from largely a consumer and low-end assembler of chips into a country that also produces and designs components of the AI hardware stack."</div>
+    <div class="quote-attr">Synthesis — Layer 1 Analysis Report</div>
+  </div>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources" class="resources">
+  <div class="section-tag">05 — References</div>
+  <h2>Source Summary</h2>
+  <p>The analysis above draws from a synthesis of industry frameworks, market data, and policy discussions. All key data points are traceable to the sources below.</p>
+
+  <div class="res-grid">
+    <div class="res-card">
+      <div class="res-cat">Framework</div>
+      <div class="res-title">ITI AI Technology Stack</div>
+      <div class="res-url">itic.org — ITI_AITechnologyStack.pdf</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Industry Data</div>
+      <div class="res-title">China Semiconductor Import Spending vs. Oil</div>
+      <div class="res-url">technode.com — China spends more importing semiconductors than oil</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Investment & Policy</div>
+      <div class="res-title">Indonesia–ARM $124.5M Semiconductor Ecosystem Partnership</div>
+      <div class="res-url">seasia.co — Indonesia, UK-based Arm partner to build semiconductor ecosystem</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Equipment</div>
+      <div class="res-title">ASML: Pioneering EUV Lithography for Advanced Microchips</div>
+      <div class="res-url">investopedia.com — ASML EUV Lithography overview</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Country Profile</div>
+      <div class="res-title">Indonesia's Semiconductor Industry & Export Potential</div>
+      <div class="res-url">dhl.com/discover/en-id — Indonesia semiconductor industry</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Regional Leader</div>
+      <div class="res-title">Semiconductor Industry in Taiwan (TSMC & Ecosystem)</div>
+      <div class="res-url">wikipedia.org — Semiconductor industry in Taiwan</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Memory Market</div>
+      <div class="res-title">SK Hynix HBM Market Share; Micron vs Samsung 2026 Battle</div>
+      <div class="res-url">astutegroup.com — SK Hynix holds 62% of HBM</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">AI Chips</div>
+      <div class="res-title">Top AI Chip Stocks — NVIDIA, AMD Analysis</div>
+      <div class="res-url">fool.com — Top 3 AI chip stocks to buy in 2026</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Export Controls</div>
+      <div class="res-title">NVIDIA Modifies H20 Chip for China to Overcome US Export Controls</div>
+      <div class="res-url">reuters.com — NVIDIA H20 chip China export controls</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Country Roadmap</div>
+      <div class="res-title">Indonesia to Deepen Role in Global Semiconductor Supply Chain</div>
+      <div class="res-url">theinvestor.vn — Indonesia semiconductor supply chain role</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Industry Vision</div>
+      <div class="res-title">Jensen Huang on AI's "Five-Layer Cake" — Davos / WEF</div>
+      <div class="res-url">blogs.nvidia.com — Davos WEF Blackrock Jensen Huang on AI infrastructure</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-note">Layer 1: Physical / Industrial Base of AI Systems · Strategic Report 2025</div>
+  <div class="footer-note">Analysis synthesized from ITI, Reuters, DHL, NVIDIA, and government sources</div>
+</footer>
+
+</body>
+</html>

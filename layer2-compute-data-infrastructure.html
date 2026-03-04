@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Layer 2: Compute & Data Infrastructure</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080b0f;
+    --surface: #0e1219;
+    --surface2: #141820;
+    --border: rgba(255,255,255,0.07);
+    --accent: #5de8c5;
+    --accent2: #4a9eff;
+    --accent3: #c8a96e;
+    --text: #e4e8f0;
+    --text-muted: #7a8099;
+    --text-dim: #404860;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.75;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,11,15,0.93);
+    backdrop-filter: blur(18px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 58px;
+  }
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--text-muted); text-decoration: none;
+    font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 60px 88px 88px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 55% 60% at 75% 25%, rgba(93,232,197,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 45% 45% at 15% 75%, rgba(74,158,255,0.06) 0%, transparent 60%),
+      linear-gradient(180deg, #080b0f 0%, #0b0e14 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(93,232,197,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(93,232,197,0.03) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 0%, transparent 100%);
+  }
+  /* animated pulse circles */
+  .hero-pulse {
+    position: absolute; top: 20%; right: 12%;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(93,232,197,0.1);
+    animation: pulse 4s ease-in-out infinite;
+  }
+  .hero-pulse::before {
+    content: ''; position: absolute; inset: 20px;
+    border-radius: 50%; border: 1px solid rgba(93,232,197,0.07);
+    animation: pulse 4s ease-in-out infinite 0.6s;
+  }
+  .hero-pulse::after {
+    content: ''; position: absolute; inset: 60px;
+    border-radius: 50%; border: 1px solid rgba(93,232,197,0.05);
+    animation: pulse 4s ease-in-out infinite 1.2s;
+  }
+  @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.06);opacity:0.6} }
+
+  .hero-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase;
+    margin-bottom: 22px; position: relative;
+    display: flex; align-items: center; gap: 12px;
+    animation: fadeUp 0.6s ease both;
+  }
+  .hero-tag::before { content: ''; display: block; width: 40px; height: 1px; background: var(--accent); }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(40px, 6vw, 84px);
+    font-weight: 700; line-height: 1.05;
+    letter-spacing: -0.02em; max-width: 880px;
+    position: relative;
+    animation: fadeUp 0.7s ease 0.1s both;
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    margin-top: 28px; font-size: 16px;
+    color: var(--text-muted); max-width: 540px;
+    line-height: 1.85; position: relative;
+    animation: fadeUp 0.7s ease 0.2s both;
+  }
+  .hero-stats {
+    display: flex; gap: 52px; margin-top: 56px;
+    position: relative;
+    animation: fadeUp 0.7s ease 0.35s both;
+  }
+  .hero-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 34px; font-weight: 600;
+    color: var(--accent2); line-height: 1;
+  }
+  .hero-stat-label {
+    font-size: 11px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px;
+  }
+  .scroll-cue {
+    position: absolute; bottom: 36px; right: 88px;
+    color: var(--text-dim); font-size: 11px;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    animation: float 3s ease-in-out infinite;
+  }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(7px)} }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(22px)} to{opacity:1;transform:translateY(0)} }
+
+  /* SECTIONS */
+  section { padding: 100px 88px; position: relative; }
+  section:nth-child(even) { background: var(--surface); }
+
+  .section-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 14px;
+  }
+  h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 3.5vw, 46px);
+    font-weight: 600; line-height: 1.15;
+    margin-bottom: 44px; max-width: 680px;
+  }
+  h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 600; margin-bottom: 10px; }
+  p { color: var(--text-muted); margin-bottom: 16px; font-size: 15px; }
+  strong { color: var(--text); font-weight: 500; }
+  .divider { width: 56px; height: 1px; background: var(--accent); margin: 24px 0; }
+
+  /* PILLARS */
+  .pillars-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 2px; margin-top: 16px;
+  }
+  .pillar-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 36px; transition: border-color 0.3s;
+    position: relative; overflow: hidden;
+  }
+  .pillar-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .pillar-card:hover::before { transform: scaleX(1); }
+  .pillar-card:hover { border-color: rgba(93,232,197,0.25); }
+  .pillar-icon { font-size: 26px; margin-bottom: 14px; }
+  .pillar-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--accent);
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 8px;
+  }
+
+  /* GLOBAL STATS ROW */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2px; margin: 32px 0;
+  }
+  .stat-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 30px 22px; text-align: center;
+    transition: border-color 0.3s;
+  }
+  .stat-card:hover { border-color: rgba(74,158,255,0.3); }
+  .stat-big {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px; font-weight: 700;
+    color: var(--accent3); line-height: 1; margin-bottom: 8px;
+  }
+  .stat-desc { font-size: 12px; color: var(--text-dim); line-height: 1.5; }
+
+  /* GLOBAL LEADERS TABLE */
+  .leaders-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 2px; margin: 32px 0;
+  }
+  .leader-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 30px; transition: border-color 0.3s;
+  }
+  .leader-card:hover { border-color: rgba(93,232,197,0.2); }
+  .leader-region {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--accent2);
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .leader-list { list-style: none; }
+  .leader-list li {
+    font-size: 13px; color: var(--text-muted);
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .leader-list li:last-child { border-bottom: none; }
+  .arr { color: var(--accent); flex-shrink: 0; }
+
+  /* QUOTE */
+  .quote-block {
+    margin: 44px 0; padding: 38px 40px;
+    border-left: 3px solid var(--accent);
+    background: var(--surface2);
+  }
+  .quote-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 21px; font-style: italic;
+    color: var(--text); line-height: 1.55; margin-bottom: 14px;
+  }
+  .quote-attr { font-size: 11px; color: var(--text-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* INDONESIA LAYOUT */
+  .indo-layout {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 60px; align-items: start;
+  }
+  .indo-stats-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+  }
+  .indo-stat {
+    background: var(--surface); border: 1px solid var(--border); padding: 22px;
+  }
+  .indo-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px; font-weight: 600;
+    color: var(--accent); line-height: 1; margin-bottom: 5px;
+  }
+  .indo-stat-desc { font-size: 11px; color: var(--text-dim); line-height: 1.5; }
+
+  /* CHALLENGES / OPPTY */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px; }
+  .panel { padding: 34px; border: 1px solid var(--border); }
+  .panel-challenge { background: rgba(255,80,80,0.04); }
+  .panel-oppty { background: rgba(93,232,197,0.04); }
+  .panel-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; margin-bottom: 18px;
+  }
+  .panel-challenge .panel-title { color: #ff8080; }
+  .panel-oppty .panel-title { color: var(--accent); }
+  .item-list { list-style: none; }
+  .item-list li {
+    font-size: 14px; color: var(--text-muted);
+    padding: 9px 0; border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .item-list li:last-child { border-bottom: none; }
+  .bc { color: #ff8080; flex-shrink: 0; }
+  .bo { color: var(--accent); flex-shrink: 0; }
+
+  /* STRATEGY ROADMAP */
+  .roadmap { display: flex; flex-direction: column; gap: 2px; margin-top: 32px; }
+  .roadmap-item {
+    display: grid; grid-template-columns: 220px 1fr;
+    border: 1px solid var(--border); background: var(--surface2);
+  }
+  .roadmap-label {
+    padding: 28px 24px; border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .roadmap-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 28px; color: var(--accent); font-weight: 500;
+  }
+  .roadmap-cat {
+    font-size: 11px; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.1em; margin-top: 4px;
+  }
+  .roadmap-body { padding: 28px 32px; }
+  .roadmap-body h4 { font-size: 16px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+  .roadmap-body p { font-size: 13px; margin-bottom: 0; }
+
+  /* ECOSYSTEM GRID */
+  .eco-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px;
+  }
+  .eco-card {
+    background: var(--surface2); border: 1px solid var(--border); padding: 30px 32px;
+    transition: border-color 0.3s;
+  }
+  .eco-card:hover { border-color: rgba(200,169,110,0.3); }
+  .eco-icon { font-size: 22px; margin-bottom: 12px; }
+  .eco-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; color: var(--accent3);
+    letter-spacing: 0.18em; text-transform: uppercase; margin-bottom: 10px;
+  }
+
+  /* RESOURCES */
+  .res-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 32px;
+  }
+  .res-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 22px 26px; transition: border-color 0.3s;
+  }
+  .res-card:hover { border-color: rgba(93,232,197,0.25); }
+  .res-cat {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px; color: var(--accent);
+    letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px;
+  }
+  .res-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 5px; }
+  .res-url { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-dim); word-break: break-all; }
+
+  /* CONCLUSION BANNER */
+  .conclusion {
+    background: linear-gradient(135deg, rgba(93,232,197,0.05) 0%, rgba(74,158,255,0.05) 100%) !important;
+    border-top: 1px solid rgba(93,232,197,0.15);
+    border-bottom: 1px solid rgba(74,158,255,0.15);
+  }
+  .conclusion h2 { color: var(--accent); }
+
+  footer {
+    padding: 36px 88px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-note { font-size: 11px; color: var(--text-dim); font-family: 'IBM Plex Mono', monospace; }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 64px 20px; }
+    .hero { padding: 80px 20px 60px; }
+    .pillars-grid, .leaders-grid, .two-col, .indo-layout, .res-grid,
+    .stats-row, .eco-grid { grid-template-columns: 1fr; }
+    .roadmap-item { grid-template-columns: 1fr; }
+    .roadmap-label { border-right: none; border-bottom: 1px solid var(--border); }
+    footer { flex-direction: column; gap: 10px; padding: 28px 20px; }
+    .hero-stats { flex-wrap: wrap; gap: 28px; }
+    .hero-pulse { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Layer 2 — AI Systems Report</div>
+  <ul class="nav-links">
+    <li><a href="#definition">Components</a></li>
+    <li><a href="#global">Global Leaders</a></li>
+    <li><a href="#indonesia">Indonesia</a></li>
+    <li><a href="#strategy">Strategy</a></li>
+    <li><a href="#ecosystem">Ecosystem</a></li>
+    <li><a href="#resources">Sources</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-pulse"></div>
+  <div class="hero-tag">Strategic Industry Report · 2025</div>
+  <h1>Layer 2: Compute &amp; <em>Data Infrastructure</em></h1>
+  <p class="hero-sub">An analysis of the operational backbone enabling AI systems — from GPU clusters and data pipelines to submarine cables, energy systems, and Indonesia's emerging role as a regional hub.</p>
+  <div class="hero-stats">
+    <div>
+      <div class="hero-stat-num">99%</div>
+      <div class="hero-stat-label">Intl. data traffic via submarine cables</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">175 ZB</div>
+      <div class="hero-stat-label">Projected global data by 2025</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">1.102 EF</div>
+      <div class="hero-stat-label">Frontier supercomputer peak performance</div>
+    </div>
+    <div>
+      <div class="hero-stat-num">500 MW</div>
+      <div class="hero-stat-label">Proposed Indonesia AI Park capacity</div>
+    </div>
+  </div>
+  <div class="scroll-cue">↓ Scroll to explore</div>
+</div>
+
+<!-- DEFINITION -->
+<section id="definition">
+  <div class="section-tag">01 — Definition</div>
+  <h2>What Is Compute &amp; Data Infrastructure?</h2>
+  <p>Layer 2 encompasses the <strong>operational backbone</strong> that enables AI systems to train on vast datasets and serve users worldwide. Four interconnected subsystems form its core:</p>
+
+  <div class="pillars-grid">
+    <div class="pillar-card">
+      <div class="pillar-icon">⚡</div>
+      <div class="pillar-label">Compute Infrastructure</div>
+      <h3>GPU / TPU Clusters & HPC</h3>
+      <p>Powerful servers and accelerator arrays that perform AI computation. Training a large neural model may involve <strong>thousands of GPU/TPU chips</strong> across many servers, all interconnected by ultra-fast <strong>400 Gbps or higher</strong> links to act as a single supercomputer.</p>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">🗄️</div>
+      <div class="pillar-label">Data Infrastructure</div>
+      <h3>Storage, Pipelines & Governance</h3>
+      <p>Storage systems and pipelines that handle data at scale — tiered systems of fast SSDs, large-capacity HDD arrays, and object storage, often spread across multiple sites. Advanced distributed file systems and streaming platforms continually feed training data while enforcing governance and security.</p>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">🌐</div>
+      <div class="pillar-label">Connectivity</div>
+      <h3>Fiber Backbone & Subsea Cables</h3>
+      <p>High-bandwidth networks linking systems and regions. About <strong>99% of international data traffic</strong> flows through submarine fiber cables — the Internet's circulatory system. Data centers are also woven together via terrestrial fiber and Internet Exchange Points worldwide.</p>
+    </div>
+    <div class="pillar-card">
+      <div class="pillar-icon">🔋</div>
+      <div class="pillar-label">Energy & Cooling</div>
+      <h3>Power Supply & Thermal Management</h3>
+      <p>AI data centers can draw <strong>10–50 MW each</strong> — requiring stable electric grids and advanced cooling from chilled air containment to direct liquid cooling for high-density AI racks. Without sufficient power and cooling, even the most advanced chips would overheat or throttle.</p>
+    </div>
+  </div>
+</section>
+
+<!-- GLOBAL LEADERSHIP -->
+<section id="global">
+  <div class="section-tag">02 — Global Leadership</div>
+  <h2>Global Leaders &amp; Best Practices</h2>
+  <p>A handful of nations and companies dominate Layer 2 by virtue of early investment, scale, and continuous innovation across all four subsystems.</p>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-big">1.102</div>
+      <div class="stat-desc">Exaflops — Frontier supercomputer (Oak Ridge, USA), first to break the exascale barrier in 2022</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">285K</div>
+      <div class="stat-desc">CPU cores in Microsoft's Azure AI supercomputer for OpenAI, paired with 10,000 GPUs at 400 Gbps</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">250 Tbps</div>
+      <div class="stat-desc">Capacity of Google's Dunant transatlantic cable — highest-capacity undersea cable ever built (live 2021)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-big">~30%</div>
+      <div class="stat-desc">Cooling energy reduction achieved by Google using AI-driven optimization of data center setpoints</div>
+    </div>
+  </div>
+
+  <div class="leaders-grid">
+    <div class="leader-card">
+      <div class="leader-region">🇺🇸 United States — Compute & Cloud</div>
+      <h3>Hyperscale & HPC Leadership</h3>
+      <ul class="leader-list">
+        <li><span class="arr">→</span>AWS, Azure, Google Cloud: world's largest cloud platforms with millions of servers across dozens of regions</li>
+        <li><span class="arr">→</span>Frontier (Oak Ridge NL): first exascale supercomputer at 1.102 Exaflops (2022)</li>
+        <li><span class="arr">→</span>Microsoft–OpenAI Azure AI cluster: 285,000 CPU cores, 10,000 GPUs, top-5 globally by raw performance</li>
+        <li><span class="arr">→</span>NVIDIA CUDA platform: default software/hardware stack for AI model training worldwide</li>
+      </ul>
+    </div>
+    <div class="leader-card">
+      <div class="leader-region">🇺🇸 🇳🇱 🇯🇵 — Connectivity</div>
+      <h3>Cable & Network Infrastructure</h3>
+      <ul class="leader-list">
+        <li><span class="arr">→</span>Google Dunant cable: 250 Tbps transatlantic, uses space-division multiplexing; live since 2021</li>
+        <li><span class="arr">→</span>Google, Meta, Microsoft, Amazon: major investors in long-haul private subsea fiber globally</li>
+        <li><span class="arr">→</span>Internet Exchange Points in Frankfurt, Amsterdam, Singapore, Virginia: meshed redundancy</li>
+        <li><span class="arr">→</span>Apricot & Echo cables in Asia: US tech firms partnering with regional telcos to diversify routes</li>
+      </ul>
+    </div>
+    <div class="leader-card">
+      <div class="leader-region">🇺🇸 🇸🇪 🇫🇮 — Energy & Cooling</div>
+      <h3>Efficiency & Sustainability</h3>
+      <ul class="leader-list">
+        <li><span class="arr">→</span>PUE values near 1.1 achieved — 90%+ of energy goes to compute, under 10% to cooling overhead</li>
+        <li><span class="arr">→</span>Microsoft trials: immersive fluid cooling for servers; also ran an underwater data center pod for 2 years</li>
+        <li><span class="arr">→</span>Google: 24/7 carbon-free energy target by 2030 — beyond annual matching to real-time clean power</li>
+        <li><span class="arr">→</span>Facebook Luleå (Sweden): 100% hydroelectric power; Nordic cold air as natural cooling</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <div class="quote-text">"AI infrastructure is essential national infrastructure."</div>
+    <div class="quote-attr">Jensen Huang, CEO — NVIDIA · World Economic Forum, Davos</div>
+  </div>
+
+  <p>Global data volume is exploding — rising from ~33 zettabytes in 2018 to an estimated <strong>175 zettabytes by 2025</strong>. Top companies treat data as a strategic asset: deploying streaming platforms (Kafka), parallel processing (Hadoop/Spark), and AI-optimized governance frameworks to maximize utility while minimizing risk. The EU's GDPR set the global standard for personal data protection, while Google pioneered MapReduce and Spanner for planetary-scale processing.</p>
+</section>
+
+<!-- INDONESIA -->
+<section id="indonesia">
+  <div class="section-tag">03 — Indonesia's Position</div>
+  <h2>Indonesia: Current Standing &amp; Strategic Potential</h2>
+
+  <div class="indo-layout">
+    <div>
+      <p>Indonesia is at an <strong>inflection point</strong> for AI compute and data infrastructure. The country's 270+ million population — most coming online via mobile — generates enormous data and creates a large market for AI-driven services. Its geographic position astride key maritime routes makes it ideal for hosting data hubs that provide redundancy to the Singapore route.</p>
+      <p>Key recent milestones signal serious intent: In <strong>2025</strong>, the national research agency <strong>BRIN</strong>, in partnership with South Korea, launched a new HPC center in Jakarta as part of a <strong>$30 million, five-year ASEAN-Korea cooperation project</strong>. Meanwhile, Google Cloud (2020), AWS (2021), and Microsoft Azure (2022–25) all opened Jakarta regions — bringing world-class GPU infrastructure onto Indonesian soil.</p>
+      <div class="divider"></div>
+      <p>Most significantly, Indonesia is partnering with <strong>Oracle</strong> to establish <strong>Southeast Asia's largest GPU cloud cluster</strong>, expected to house tens of thousands of GPUs — aligned with Indonesia's Digital Vision 2045 roadmap and targeting education, healthcare, and smart city applications.</p>
+      <p>On the data governance front, Indonesia enacted its first comprehensive <strong>Personal Data Protection Law in 2022</strong>, analogous to Europe's GDPR — a critical foundation for building AI training datasets ethically and securely.</p>
+    </div>
+    <div>
+      <div class="indo-stats-grid">
+        <div class="indo-stat">
+          <div class="indo-stat-num">200M+</div>
+          <div class="indo-stat-desc">Online users generating vast AI training data</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">$30M</div>
+          <div class="indo-stat-desc">BRIN–South Korea HPC partnership (5-year program)</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">4 of 10</div>
+          <div class="indo-stat-desc">Major Asia-Pacific submarine cables landing in Indonesia by 2025</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">$59B</div>
+          <div class="indo-stat-desc">Projected GDP uplift from improved connectivity by 2025</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">207 GW</div>
+          <div class="indo-stat-desc">Solar PV potential for powering AI infrastructure</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">29 GW</div>
+          <div class="indo-stat-desc">Geothermal potential — Indonesia is world's 2nd largest producer</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">600 MW</div>
+          <div class="indo-stat-desc">DCI Indonesia expansion capacity target in Karawang</div>
+        </div>
+        <div class="indo-stat">
+          <div class="indo-stat-num">26%</div>
+          <div class="indo-stat-desc">Fixed broadband household penetration rate (area to improve)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="panel panel-challenge">
+      <div class="panel-title">⚠ Challenges</div>
+      <ul class="item-list">
+        <li><span class="bc">✕</span>No domestic AI supercomputer at global scale; HPC capabilities modest vs. US and China</li>
+        <li><span class="bc">✕</span>Fixed broadband penetration only 26%; Indonesia ranks 131st of 200 in affordability</li>
+        <li><span class="bc">✕</span>Average mobile broadband speed (~17 Mbps) is second slowest in ASEAN</li>
+        <li><span class="bc">✕</span>Tropical climate (25–35°C year-round) drives PUE up to ~1.5 — less efficient than temperate data centers</li>
+        <li><span class="bc">✕</span>Power grid ~60% coal-dependent; faces strain on Java during peak demand</li>
+        <li><span class="bc">✕</span>One of the world's highest submarine cable fault rates due to geography, ships, and seismic activity</li>
+        <li><span class="bc">✕</span>Repair delays averaging 30+ days (vs. faster neighbors) due to prior regulatory restrictions on foreign repair ships</li>
+        <li><span class="bc">✕</span>Major talent gap in data engineering, cloud operations, and AI systems</li>
+      </ul>
+    </div>
+    <div class="panel panel-oppty">
+      <div class="panel-title">✦ Opportunities</div>
+      <ul class="item-list">
+        <li><span class="bo">✓</span>Oracle AI Center partnership: Southeast Asia's largest GPU cluster, tens of thousands of GPUs</li>
+        <li><span class="bo">✓</span>4 of 10 major Asia-Pacific subsea cables landing in Indonesia by 2025 (Bifrost, Echo, etc.)</li>
+        <li><span class="bo">✓</span>207 GW solar + 29 GW geothermal potential — path to competitively priced renewable energy</li>
+        <li><span class="bo">✓</span>Palapa Ring completed (2019): fiber backbone connecting all 34 provinces and 514 regencies</li>
+        <li><span class="bo">✓</span>Personal Data Protection Law (2022) — foundation for trusted AI data governance</li>
+        <li><span class="bo">✓</span>Singapore now limiting new data centers due to land/power constraints — Indonesia can absorb overflow</li>
+        <li><span class="bo">✓</span>Proposed 500 MW AI Park with green energy integration; DCI Karawang expansion to 600 MW</li>
+        <li><span class="bo">✓</span>BRIN–Korea HPC project + cloud regions from Google, AWS, Azure establishing local precedent</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- STRATEGY -->
+<section id="strategy">
+  <div class="section-tag">04 — Strategic Roadmap</div>
+  <h2>Six Strategies for Indonesia's Layer 2 Advancement</h2>
+  <p>A multi-pronged strategy spanning investment, policy reform, talent development, and international collaboration is required to elevate Indonesia's position in global AI compute infrastructure.</p>
+
+  <div class="roadmap">
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">01</div>
+        <div class="roadmap-cat">Planning</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>National AI Infrastructure Masterplan</h4>
+        <p>Formulate a dedicated masterplan with targets for compute capacity, connectivity, and data capabilities over the next decade. Prioritize establishing a National AI Supercomputing Center (expanding on BRIN–Korea HPC) with petaflop-scale access for universities, startups, and government. Offer tax holidays and accelerated depreciation for hyperscale data center campuses. Designate industrial-grade power zones near substations or power plants as data center parks with pre-laid fiber and streamlined permits.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">02</div>
+        <div class="roadmap-cat">Connectivity</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Enhance Connectivity &amp; Network Resilience</h4>
+        <p>Fully implement recent reforms on submarine cable landing and repair. Establish an Indonesia Cable Authority as a single-window regulator. Encourage additional cable routes (Java–Australia, links to Japan and India). Extend the Palapa Ring with spur networks to smaller islands. Strengthen Internet Exchange Points in Jakarta, Surabaya, and Medan to keep local traffic domestic, reducing latency and cost. Foster competition in broadband markets to reduce Indonesia's ranking of 131st in affordability.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">03</div>
+        <div class="roadmap-cat">Energy</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Power AI Infrastructure Sustainably</h4>
+        <p>Facilitate renewable Power Purchase Agreements (PPAs) for data center operators or allow direct investment in captive solar/wind farms. Work with PLN to build dedicated high-voltage feeders to major data center clusters with battery storage for peak-shaving. Establish "Green Data Center Parks" near geothermal or hydro resources in North Sumatra or Sulawesi with pre-laid fiber and ready permits. Provide grants for direct liquid cooling adoption. Data centers may account for 20–30% of Indonesia's power demand — grid planning must begin now.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">04</div>
+        <div class="roadmap-cat">Talent</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Talent Development &amp; Retention</h4>
+        <p>Introduce specialized "Cloud and Big Data Engineering" university tracks combining distributed systems, database management, and data center HVAC/power systems. Fund 6-month internship programs at Google, Microsoft, or AWS data centers abroad — conditional on return commitment. Establish a National AI Research Institute employing top AI PhDs with access to the national supercomputer, creating world-class research opportunities domestically. Structure the Oracle AI Center partnership to include local training programs so Indonesians operate and innovate on those facilities.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">05</div>
+        <div class="roadmap-cat">Data</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>Data Ecosystem &amp; Governance</h4>
+        <p>Create a centralized open data platform hosting non-sensitive anonymized datasets (mobility, satellite imagery, public health) to spur local AI model development. Enforce the 2022 Personal Data Protection Law with clear implementation guidelines to build enterprise trust. Consider an Indonesian Cloud and AI Alliance — a forum for government, local IT firms, and foreign cloud providers to agree on data handling standards, cybersecurity protocols, and interoperability requirements. Use data residency rules strategically to ensure digital sovereignty without stifling global services.</p>
+      </div>
+    </div>
+    <div class="roadmap-item">
+      <div class="roadmap-label">
+        <div class="roadmap-num">06</div>
+        <div class="roadmap-cat">Collaboration</div>
+      </div>
+      <div class="roadmap-body">
+        <h4>International &amp; Regional Partnerships</h4>
+        <p>Pursue an NVIDIA or AMD AI hardware incubator for hands-on training with the latest accelerators. Coordinate with ASEAN neighbors on an "ASEAN Digital Backbone" — resilient regional internet with shared cable protection agreements and a potential joint supercomputing grid. Engage Japan (JICA), the US International Development Finance Corp, and EU bodies for co-financing of cable routes and disaster-resilient data hubs. Position Indonesia as a "reliable partner" in diversifying AI infrastructure away from overly concentrated hubs — emphasizing political stability, large consumer base, and improving regulation.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ECOSYSTEM -->
+<section id="ecosystem">
+  <div class="section-tag">05 — Ecosystem Support</div>
+  <h2>Building the Supporting Ecosystem</h2>
+  <p>Achieving Layer 2 goals is a team effort — requiring synchronized action across government, industry, academia, and international partners. If any single piece lags, the whole effort slows.</p>
+
+  <div class="eco-grid">
+    <div class="eco-card">
+      <div class="eco-icon">🏛️</div>
+      <div class="eco-label">Government Leadership</div>
+      <h3>Enabling Policy &amp; Public Investment</h3>
+      <p>Invest in public goods — backbone networks and research centers. Establish a National Digital Transformation Office to coordinate across ministries. Government agencies should be early adopters of AI infrastructure, using local cloud and HPC for e-governance and smart city projects as "anchor clients" that set security and energy efficiency standards for procurement.</p>
+    </div>
+    <div class="eco-card">
+      <div class="eco-icon">🤝</div>
+      <div class="eco-label">Public–Private Partnerships</div>
+      <h3>Shared Investment in Major Projects</h3>
+      <p>Government provides land and power tariff discounts for new data center parks; private consortia build and operate. Tap Indonesia's INA sovereign wealth fund or infrastructure bonds for data center development. Tech companies should adopt university ICT programs. Long-term stable returns from cloud lease agreements make digital infrastructure suitable for pension fund co-investment.</p>
+    </div>
+    <div class="eco-card">
+      <div class="eco-icon">📋</div>
+      <div class="eco-label">Industry Associations</div>
+      <h3>Standards &amp; Knowledge Sharing</h3>
+      <p>IDPRO (Indonesia Data Center Association) and ASA (AI Society of Indonesia) should develop local standards aligned with global ISO frameworks but tailored to tropical conditions. Interface with Uptime Institute, Open Compute Project, and similar bodies to keep Indonesian facilities world-class. Host annual AI Infrastructure conferences in Jakarta to bring global expertise to Indonesian audiences.</p>
+    </div>
+    <div class="eco-card">
+      <div class="eco-icon">🎓</div>
+      <div class="eco-label">Education &amp; Academia</div>
+      <h3>Research-to-Industry Pipeline</h3>
+      <p>Update curricula and provide grants for applied research in Indonesian NLP, network optimization for the Palapa Ring, and tropical cooling solutions. Establish university-industry incubators where startups doing AI-driven agriculture or health analytics can access the national supercomputer via subsidized compute credits. Embed students in real-world projects with telcos and cloud providers.</p>
+    </div>
+    <div class="eco-card">
+      <div class="eco-icon">🌏</div>
+      <div class="eco-label">Regional Partners</div>
+      <h3>ASEAN &amp; Global Collaboration</h3>
+      <p>Engage Japan (JICA), US (DFC), and EU for joint investments in cable routes and data hubs. Propose an ASEAN AI Infrastructure Working Group for green data center knowledge in tropical environments and cross-border data flow standards. Participate in OECD AI policy discussions and the Global Partnership on AI (GPAI) to remain current on trends informing domestic build-out.</p>
+    </div>
+    <div class="eco-card">
+      <div class="eco-icon">🔒</div>
+      <div class="eco-label">Security &amp; Trust</div>
+      <h3>Cybersecurity &amp; Governance Frameworks</h3>
+      <p>BSSN and Kominfo must collaborate on a National Cybersecurity Operations Center monitoring cloud and data center threats. Require critical data centers to adhere to regular security audits and certifications. Align with international data governance norms at G20 digital ministers forums to assure global partners that Indonesia is a stable, trusted link in the AI infrastructure chain.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONCLUSION -->
+<section class="conclusion">
+  <div class="section-tag">06 — Conclusion</div>
+  <h2>The Path Forward: From Consumer to Hub</h2>
+  <p>Indonesia is at a decisive inflection point. The ingredients for success are converging — improving networks, early HPC projects, a surging data center sector, and strong policy focus on digital growth. The country's potential to become a major regional hub for AI computation is real.</p>
+  <p>In concrete terms, success would mean that in <strong>5–10 years</strong>, Indonesia could host multiple world-class data centers totaling <strong>1+ GW of capacity</strong>, one or two supercomputing centers ranking in the regional top tier, a vibrant domestic cloud service industry, and high-speed connectivity linking all major economic centers of the archipelago.</p>
+  <div class="quote-block" style="margin: 36px 0;">
+    <div class="quote-text">"Countries that recognize AI infrastructure as fundamental national infrastructure — like roads or electricity — will allocate resources accordingly. Indonesia is moving in this direction; the key is to maintain momentum."</div>
+    <div class="quote-attr">Synthesis — Layer 2 Analysis Report · 2025</div>
+  </div>
+  <p>Fortifying Layer 2 is not just about technology — it is about positioning Indonesia in the future global economy. As AI becomes integral to finance, farming, healthcare, and defense, countries with strong compute and data foundations will have an edge in innovation and productivity. With strategic focus and collaborative effort, Indonesia can evolve from primarily a <strong>consumer of imported cloud services</strong> into an <strong>indispensable node</strong> of the global AI network — hosting data, crunching numbers, and connecting markets — thereby securing its ambition to be a leading digital economy by its centennial in 2045.</p>
+</section>
+
+<!-- RESOURCES -->
+<section id="resources">
+  <div class="section-tag">07 — References</div>
+  <h2>Source Summary</h2>
+  <p>Analysis draws from supercomputing rankings, infrastructure case studies, IDC data, government documents, and expert commentary. All key data points are traceable to the sources below.</p>
+
+  <div class="res-grid">
+    <div class="res-card">
+      <div class="res-cat">Compute — HPC</div>
+      <div class="res-title">ORNL's Frontier: First to Break the Exaflop Ceiling</div>
+      <div class="res-url">top500.org — ORNL Frontier exaflop announcement</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Compute — Cloud</div>
+      <div class="res-title">Microsoft Azure AI Supercomputer for OpenAI</div>
+      <div class="res-url">news.microsoft.com — OpenAI Azure supercomputer (285K CPUs, 10K GPUs)</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Compute — China</div>
+      <div class="res-title">China May Already Have Two Exascale Supercomputers</div>
+      <div class="res-url">datacenterdynamics.com — China exascale systems analysis</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Data Scale</div>
+      <div class="res-title">IDC: Expect 175 Zettabytes of Data Worldwide by 2025</div>
+      <div class="res-url">networkworld.com — IDC global data growth forecast</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Connectivity</div>
+      <div class="res-title">Google's Virginia-to-France Dunant Cable Goes Live (250 Tbps)</div>
+      <div class="res-url">datacenterdynamics.com — Dunant cable live announcement</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Connectivity</div>
+      <div class="res-title">Dunant Submarine Cable System Ready for Service</div>
+      <div class="res-url">oceannews.com — Dunant cable service readiness</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Energy</div>
+      <div class="res-title">Google 24/7 Carbon-Free Energy by 2030 — Sustainability Report</div>
+      <div class="res-url">sustainability.google — 24/7 carbon-free energy report</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Energy</div>
+      <div class="res-title">Towards a Sustainable Future for Data Centers in Indonesia</div>
+      <div class="res-url">datagarda.com — Indonesia data center architecture, cooling, energy</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — HPC</div>
+      <div class="res-title">Indonesia and Korea Launch HPC Supercomputer (ASEAN Collaboration)</div>
+      <div class="res-url">akstcc.org — BRIN–Korea HPC launch, $30M 5-year program</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — AI Center</div>
+      <div class="res-title">Indonesia Partners with Oracle for Southeast Asia's Largest AI Center</div>
+      <div class="res-url">growyourbusiness.org — Oracle AI Center partnership, tens of thousands of GPUs</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Governance</div>
+      <div class="res-title">PDP Law (Indonesia) Personal Data Protection — Google Cloud Compliance</div>
+      <div class="res-url">cloud.google.com — Indonesia PDPL compliance overview (enacted 2022)</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Connectivity</div>
+      <div class="res-title">Indonesia Completes Palapa Ring Internet Superhighway</div>
+      <div class="res-url">jakartaglobe.id — Palapa Ring completion, 34 provinces, 514 regencies</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Connectivity</div>
+      <div class="res-title">Indonesia Isn't Ready to Become Asia's Submarine Cable Hub</div>
+      <div class="res-url">foreignpolicy.com — cable regulation, repair delays, reform analysis</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Broadband</div>
+      <div class="res-title">How Can Indonesia Improve Internet Quality and Universalize Access?</div>
+      <div class="res-url">blogs.worldbank.org — World Bank assessment of Indonesia internet quality & cost</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Cable Policy</div>
+      <div class="res-title">Indonesia Designates DLPs for Submarine Cables</div>
+      <div class="res-url">linkedin.com — Designated Landing Points: Batam, Manado, Kupang</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Indonesia — Data Centers</div>
+      <div class="res-title">DCI Launches 8th Data Center — Indonesia's Largest; Karawang 600 MW</div>
+      <div class="res-url">datacenterdynamics.com — DCI Indonesia expansion to Karawang</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">ASEAN — Energy</div>
+      <div class="res-title">How ASEAN Can Power Its Digital Boom with Clean Energy</div>
+      <div class="res-url">linkedin.com — ASEAN digital growth and clean energy alignment</div>
+    </div>
+    <div class="res-card">
+      <div class="res-cat">Vision</div>
+      <div class="res-title">Jensen Huang on AI's "Five-Layer Cake" at Davos — NVIDIA Blog</div>
+      <div class="res-url">blogs.nvidia.com — Davos WEF AI as essential national infrastructure</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-note">Layer 2: Compute & Data Infrastructure · Strategic Report 2025</div>
+  <div class="footer-note">Sources: Top500, IDC, Microsoft, Google, Foreign Policy, World Bank, Indonesian Government</div>
+</footer>
+
+</body>
+</html>
